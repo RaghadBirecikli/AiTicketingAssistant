@@ -1,0 +1,46 @@
+<aside class="summary" aria-labelledby="ticket-summary-heading">
+  <h2 id="ticket-summary-heading">{{ 'ticketDetails.summary' | t }}</h2>
+
+  <dl>
+    <div>
+      <dt>{{ 'tickets.status' | t }}</dt>
+      <dd><app-ticket-badge [value]="ticket.status" /></dd>
+    </div>
+    <div>
+      <dt>{{ 'tickets.priority' | t }}</dt>
+      <dd><app-ticket-badge [value]="ticket.priority" kind="priority" /></dd>
+    </div>
+    <div>
+      <dt>{{ 'tickets.category' | t }}</dt>
+      <dd>{{ categoryLabel() }}</dd>
+    </div>
+    <div>
+      <dt>{{ 'ticketDetails.source' | t }}</dt>
+      <dd>{{ sourceLabel() }}</dd>
+    </div>
+    <div>
+      <dt>{{ 'tickets.customer' | t }}</dt>
+      <dd [attr.dir]="customerDirection()" [class.ltr-token]="customerDirection() === 'ltr'">{{ customerLabel() }}</dd>
+    </div>
+    <div>
+      <dt>{{ 'tickets.assignedAgent' | t }}</dt>
+      <dd dir="auto">{{ assignedLabel() }}</dd>
+    </div>
+    <div>
+      <dt>{{ 'tickets.created' | t }}</dt>
+      <dd class="bidi-isolate">{{ ticket.createdAtUtc | localDateTime }}</dd>
+    </div>
+    <div>
+      <dt>{{ 'tickets.updated' | t }}</dt>
+      <dd class="bidi-isolate">{{ ticket.updatedAtUtc | localDateTime }}</dd>
+    </div>
+    <div>
+      <dt>{{ 'ticketDetails.resolved' | t }}</dt>
+      <dd class="bidi-isolate">{{ ticket.resolvedAtUtc | localDateTime }}</dd>
+    </div>
+    <div>
+      <dt>{{ 'ticketDetails.closed' | t }}</dt>
+      <dd class="bidi-isolate">{{ ticket.closedAtUtc | localDateTime }}</dd>
+    </div>
+  </dl>
+</aside>

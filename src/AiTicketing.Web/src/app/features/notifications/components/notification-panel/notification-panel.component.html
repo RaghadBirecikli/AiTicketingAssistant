@@ -1,0 +1,73 @@
+<section class="notification-panel" aria-labelledby="notification-panel-heading">
+  <header>
+    <div>
+      <p>{{ 'notifications.center' | t }}</p>
+      <h2 id="notification-panel-heading">{{ 'notifications.title' | t }}</h2>
+    </div>
+    <button class="icon-button" type="button" [attr.aria-label]="'notifications.close' | t" (click)="closePanel.emit()">{{ 'common.close' | t }}</button>
+  </header>
+
+  <div class="toolbar">
+    <span class="live-state" aria-live="polite">
+      @switch (realtime.connectionState()) {
+        @case ('connected') {
+          {{ 'notifications.liveConnected' | t }}
+        }
+        @case ('reconnecting') {
+          {{ 'notifications.liveReconnecting' | t }}
+        }
+        @case ('connecting') {
+          {{ 'notifications.liveConnecting' | t }}
+        }
+        @default {
+          {{ 'notifications.liveUnavailable' | t }}
+        }
+      }
+    </span>
+
+    @if (notifications.unreadCount() > 0) {
+      <button class="button button-secondary" type="button" [disabled]="notifications.isMarkingAll()" (click)="notifications.markAllAsRead()">
+        {{ notifications.isMarkingAll() ? ('notifications.markingAll' | t) : ('notifications.markAllRead' | t) }}
+      </button>
+    }
+    <button class="button button-secondary" type="button" [disabled]="notifications.isListLoading()" (click)="notifications.loadNotifications(true)">
+      {{ notifications.isListLoading() ? ('dashboard.refreshing' | t) : ('common.refresh' | t) }}
+    </button>
+  </div>
+
+  @if (notifications.statusMessage()) {
+    <div class="feedback success" role="status" aria-live="polite">{{ notifications.statusMessage() }}</div>
+  }
+
+  @if (notifications.markAllError()) {
+    <div class="feedback error" role="alert">{{ notifications.markAllError() }}</div>
+  }
+
+  @if (notifications.itemError()) {
+    <div class="feedback error" role="alert">{{ notifications.itemError() }}</div>
+  }
+
+  @if (notifications.isListLoading() && notifications.notifications().length === 0) {
+    <div class="state-panel" role="status" aria-live="polite">{{ 'notifications.loading' | t }}</div>
+  } @else if (notifications.listError()) {
+    <div class="state-panel error" role="alert">
+      <p>{{ notifications.listError() }}</p>
+      <button class="button" type="button" [disabled]="notifications.isListLoading()" (click)="notifications.loadNotifications(true)">{{ 'common.retry' | t }}</button>
+    </div>
+  } @else if (notifications.notifications().length === 0) {
+    <div class="state-panel">{{ 'notifications.empty' | t }}</div>
+  } @else {
+    <div class="notification-list" role="list">
+      @for (notification of notifications.notifications(); track notification.id) {
+        <div role="listitem">
+          <app-notification-item
+            [notification]="notification"
+            [isMarking]="notifications.isMarking(notification.id)"
+            (markRead)="notifications.markAsRead($event)"
+            (openTicket)="notifications.openTicket($event)"
+          />
+        </div>
+      }
+    </div>
+  }
+</section>

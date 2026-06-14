@@ -1,0 +1,46 @@
+.workflow-card {
+  display: grid;
+  gap: 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  box-shadow: none;
+  padding: 0.95rem;
+}
+
+h2,
+p {
+  margin: 0;
+}
+
+h2 {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+p {
+  color: var(--text-secondary);
+}
+
+.confirmation {
+  display: grid;
+  gap: 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--warning), var(--border) 50%);
+  border-radius: var(--radius-sm);
+  background: var(--warning-soft);
+  color: var(--warning);
+  padding: 0.75rem;
+}
+
+.confirmation-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+@media (max-width: 520px) {
+  .confirmation-actions .button,
+  .workflow-card > .button {
+    width: 100%;
+  }
+}

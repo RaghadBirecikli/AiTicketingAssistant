@@ -1,0 +1,114 @@
+.login-page {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 440px);
+  gap: clamp(1.5rem, 5vw, 5rem);
+  align-items: center;
+  min-height: 100vh;
+  padding: clamp(1.2rem, 5vw, 4rem);
+}
+
+.login-identity {
+  display: grid;
+  gap: 2rem;
+}
+
+.brand-lockup {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.brand-mark {
+  display: inline-grid;
+  width: 2.65rem;
+  height: 2.65rem;
+  place-items: center;
+  border-radius: var(--radius-sm);
+  background: var(--primary);
+  color: #fff;
+  font-weight: 600;
+}
+
+.brand-mark app-ui-icon {
+  width: 1.55rem;
+  height: 1.55rem;
+}
+
+.brand-lockup div,
+.identity-panel,
+.login-heading {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.brand-lockup strong {
+  font-size: 1.05rem;
+}
+
+.brand-lockup small,
+.login-heading span {
+  color: var(--text-muted);
+}
+
+.identity-panel {
+  max-width: 680px;
+  border-inline-start: 2px solid var(--primary);
+  padding-inline-start: clamp(1rem, 3vw, 1.5rem);
+}
+
+.identity-panel p,
+.identity-panel h2,
+.login-heading p,
+.login-heading h1 {
+  margin: 0;
+}
+
+.identity-panel p,
+.login-heading p {
+  color: var(--primary);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.identity-panel h2 {
+  max-width: 680px;
+  font-size: clamp(1.9rem, 5vw, 3.6rem);
+  font-weight: 650;
+  line-height: 1.08;
+}
+
+.login-card {
+  display: grid;
+  gap: 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--surface-elevated), transparent 3%);
+  box-shadow: var(--shadow-md);
+  padding: clamp(1.2rem, 4vw, 2rem);
+}
+
+.login-heading h1 {
+  font-size: clamp(1.6rem, 3vw, 2rem);
+}
+
+a {
+  justify-self: start;
+  color: var(--primary);
+  font-weight: 600;
+}
+
+@media (max-width: 860px) {
+  .login-page {
+    grid-template-columns: 1fr;
+  }
+
+  .login-identity {
+    gap: 1rem;
+  }
+
+  .identity-panel h2 {
+    font-size: clamp(1.7rem, 8vw, 2.5rem);
+  }
+}

@@ -1,0 +1,49 @@
+.conversation {
+  display: grid;
+  gap: 0.95rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  box-shadow: none;
+  padding: clamp(1rem, 2vw, 1.25rem);
+}
+
+h2 {
+  margin: 0;
+  font-size: 0.98rem;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.timeline {
+  position: relative;
+  display: grid;
+  gap: 0.95rem;
+}
+
+.timeline::before {
+  content: "";
+  position: absolute;
+  inset-block: 0.45rem;
+  inset-inline-start: 1.1rem;
+  width: 1px;
+  background: linear-gradient(180deg, transparent, var(--border), transparent);
+}
+
+.empty {
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-md);
+  background: var(--surface-muted);
+  color: var(--text-secondary);
+  padding: 1rem;
+}
+
+@media (max-width: 560px) {
+  .conversation {
+    padding: 0.85rem;
+  }
+
+  .timeline::before {
+    inset-inline-start: 0.95rem;
+  }
+}

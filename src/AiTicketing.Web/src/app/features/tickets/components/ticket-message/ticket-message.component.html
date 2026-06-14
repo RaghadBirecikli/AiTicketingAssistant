@@ -1,0 +1,16 @@
+<article class="message" [class.internal-note]="message.isInternalNote">
+  <header>
+    <span class="avatar" aria-hidden="true">{{ (message.senderDisplayName || message.senderRole || 'U').slice(0, 2).toUpperCase() }}</span>
+    <div>
+      <strong dir="auto">{{ senderLabel() }}</strong>
+      <span>{{ roleLabel() }}</span>
+    </div>
+    <time class="bidi-isolate" [attr.datetime]="message.createdAtUtc">{{ message.createdAtUtc | localDateTime }}</time>
+  </header>
+
+  @if (message.isInternalNote) {
+    <p class="note-label">{{ 'messages.internalNote' | t }}</p>
+  }
+
+  <p class="body" dir="auto">{{ message.body }}</p>
+</article>

@@ -1,0 +1,86 @@
+<section class="details-page" aria-labelledby="ticket-details-heading">
+  <button class="button button-secondary back-button" type="button" (click)="backToTickets()">{{ 'ticketDetails.back' | t }}</button>
+
+  @if (isLoading()) {
+    <div class="state-panel" role="status">{{ 'ticketDetails.loading' | t }}</div>
+  }
+
+  @if (!isLoading() && errorMessage(); as message) {
+    <div class="state-panel error" role="alert">
+      <p>{{ message }}</p>
+      @if (state() !== 'not-found') {
+        <button class="button" type="button" (click)="retry()">{{ 'common.retry' | t }}</button>
+      }
+    </div>
+  }
+
+  @if (!isLoading() && !errorMessage() && ticket(); as item) {
+    <header class="details-header">
+      <p>{{ role() === 'Admin' ? ('ticketDetails.adminView' | t) : role() === 'Agent' ? ('ticketDetails.agentView' | t) : ('ticketDetails.customerView' | t) }}</p>
+      <h1 id="ticket-details-heading" dir="auto">{{ item.title }}</h1>
+      <p class="description" dir="auto">{{ item.description }}</p>
+      <div class="header-meta" [attr.aria-label]="'ticketDetails.metadata' | t">
+        <span class="pill">{{ statusLabel(item.status) }}</span>
+        <span class="pill">{{ priorityLabel(item.priority) }}</span>
+        <span class="pill">{{ categoryLabel(item.category) }}</span>
+      </div>
+    </header>
+
+    <div class="details-layout">
+      <aside class="summary-column" aria-label="Ticket controls">
+        <app-ticket-summary-card
+          [ticket]="item"
+          [agents]="agents()"
+          [currentUserId]="currentUser()?.id ?? null"
+          [currentUserDisplayName]="currentUserDisplayName()" />
+
+        @if (canAssignTicket()) {
+          <app-ticket-assignment-control
+            [agents]="agents()"
+            [currentAssignedToUserId]="item.assignedToUserId"
+            [isSubmitting]="isAssigning()"
+            [errorMessage]="assignmentError()"
+            [successMessage]="assignmentSuccess()"
+            (assignTicket)="assignTicket($event)" />
+        }
+
+        @if (canChangeStatus()) {
+          <app-ticket-status-control
+            [currentStatus]="item.status"
+            [isSubmitting]="isChangingStatus()"
+            [errorMessage]="statusError()"
+            [successMessage]="statusSuccess()"
+            (changeStatus)="changeStatus($event)" />
+        }
+
+        @if (canUseAi()) {
+          <app-ticket-ai-panel
+            [ticketId]="item.id"
+            [role]="role()"
+            (insertReply)="insertSuggestedReply($event)" />
+        }
+      </aside>
+      <div class="conversation-column">
+        <app-ticket-conversation [messages]="sortedMessages()" />
+
+        <app-ticket-message-composer
+          #publicComposer
+          mode="public"
+          [isSubmitting]="isSendingMessage()"
+          [errorMessage]="messageError()"
+          [successMessage]="messageSuccess()"
+          (sendMessage)="addPublicMessage($event)" />
+
+        @if (canAddInternalNote()) {
+          <app-ticket-message-composer
+            #internalComposer
+            mode="internal"
+            [isSubmitting]="isSendingInternalNote()"
+            [errorMessage]="internalNoteError()"
+            [successMessage]="internalNoteSuccess()"
+            (sendMessage)="addInternalNote($event)" />
+        }
+      </div>
+    </div>
+  }
+</section>

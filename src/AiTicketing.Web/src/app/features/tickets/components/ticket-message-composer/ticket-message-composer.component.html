@@ -1,0 +1,37 @@
+<form class="composer" [class.internal]="mode === 'internal'" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+  <div class="composer-heading">
+    <h2>{{ title }}</h2>
+    <p>{{ description }}</p>
+  </div>
+
+  @if (successMessage) {
+    <div class="feedback success" role="status" aria-live="polite">{{ successMessage }}</div>
+  }
+
+  @if (errorMessage) {
+    <div class="feedback error" role="alert">{{ errorMessage }}</div>
+  }
+
+  <div class="form-field">
+    <label [for]="mode + '-message-body'">{{ mode === 'internal' ? ('messages.internalNoteText' | t) : ('messages.messageText' | t) }}</label>
+    <textarea
+      [id]="mode + '-message-body'"
+      formControlName="body"
+      rows="5"
+      [attr.aria-describedby]="mode + '-message-help ' + mode + '-message-error'"
+      [attr.maxlength]="maxLength + 1"></textarea>
+    <div class="field-help" [id]="mode + '-message-help'">
+      {{ 'messages.charsRemaining' | t: { count: remainingCharacters } }}
+    </div>
+    <div class="field-error" [id]="mode + '-message-error'" aria-live="polite">
+      @if (bodyControl.touched && (bodyControl.hasError('required') || bodyControl.hasError('whitespace'))) {
+        {{ 'messages.validation' | t }}
+      }
+      @if (bodyControl.touched && bodyControl.hasError('maxlength')) {
+        {{ 'messages.maxLength' | t: { count: maxLength } }}
+      }
+    </div>
+  </div>
+
+  <button class="button" type="submit" [disabled]="form.invalid || isSubmitting">{{ buttonText }}</button>
+</form>

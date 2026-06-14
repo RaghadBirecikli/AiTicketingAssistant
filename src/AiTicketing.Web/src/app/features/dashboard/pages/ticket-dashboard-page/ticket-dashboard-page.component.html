@@ -1,0 +1,72 @@
+<section class="dashboard-page" aria-labelledby="dashboard-heading">
+  <header class="dashboard-header">
+    <div>
+      <p id="dashboard-heading">{{ 'dashboard.overview' | t }}</p>
+      <p>{{ description() }}</p>
+    </div>
+
+    <button class="button button-secondary" type="button" [disabled]="isLoading()" (click)="refresh()">
+      {{ isLoading() && hasLoadedOnce() ? ('dashboard.refreshing' | t) : ('common.refresh' | t) }}
+    </button>
+  </header>
+
+  @if (isLoading() && !stats()) {
+    <div class="state-panel" role="status" aria-live="polite">{{ 'dashboard.loading' | t }}</div>
+  }
+
+  @if (errorMessage()) {
+    <div class="state-panel error" role="alert">
+      <p>{{ errorMessage() }}</p>
+      <button class="button" type="button" [disabled]="isLoading()" (click)="refresh()">{{ 'common.retry' | t }}</button>
+    </div>
+  }
+
+  @if (refreshMessage()) {
+    <div class="feedback success" role="status" aria-live="polite">{{ refreshMessage() }}</div>
+  }
+
+  @if (stats()) {
+    <section class="stats-section" aria-labelledby="stats-heading">
+      <h2 id="stats-heading">{{ 'dashboard.statsHeading' | t }}</h2>
+      <div class="stats-grid primary-stats">
+        @for (card of primaryStatCards(); track card.label) {
+          <app-dashboard-stat-card
+            [label]="card.label"
+            [value]="card.value"
+            [explanation]="card.explanation"
+            [link]="card.link ?? null"
+            [queryParams]="card.queryParams ?? null"
+          />
+        }
+      </div>
+
+      @if (secondaryStatCards().length > 0) {
+        <div class="stats-grid secondary-stats">
+          @for (card of secondaryStatCards(); track card.label) {
+            <app-dashboard-stat-card
+              [label]="card.label"
+              [value]="card.value"
+              [explanation]="card.explanation"
+              [link]="card.link ?? null"
+              [queryParams]="card.queryParams ?? null"
+            />
+          }
+        </div>
+      }
+    </section>
+  }
+
+  <section class="actions-section" aria-labelledby="actions-heading">
+    <h2 id="actions-heading">{{ 'dashboard.quickActions' | t }}</h2>
+    <div class="actions-grid">
+      @for (action of quickActions(); track action.label) {
+        <app-dashboard-quick-action
+          [label]="action.label"
+          [description]="action.description"
+          [link]="action.link"
+          [queryParams]="action.queryParams ?? null"
+        />
+      }
+    </div>
+  </section>
+</section>

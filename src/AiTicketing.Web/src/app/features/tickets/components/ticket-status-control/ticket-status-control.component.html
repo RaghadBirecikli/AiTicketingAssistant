@@ -1,0 +1,37 @@
+<form class="workflow-card" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+  <div>
+    <h2>{{ 'workflows.status' | t }}</h2>
+    <p>{{ 'workflows.currentStatus' | t: { status: statusLabel(currentStatus) } }}</p>
+  </div>
+
+  @if (successMessage) {
+    <div class="feedback success" role="status" aria-live="polite">{{ successMessage }}</div>
+  }
+
+  @if (errorMessage) {
+    <div class="feedback error" role="alert">{{ errorMessage }}</div>
+  }
+
+  <div class="form-field">
+    <label for="ticketStatus">{{ 'workflows.changeStatus' | t }}</label>
+    <select id="ticketStatus" formControlName="status">
+      @for (status of statuses; track status) {
+        <option [value]="status">{{ statusLabel(status) }}</option>
+      }
+    </select>
+  </div>
+
+  @if (confirmationPending()) {
+    <div class="confirmation" role="group" [attr.aria-label]="'workflows.confirmClosing' | t">
+      <p>{{ 'workflows.closeWarning' | t }}</p>
+      <div class="confirmation-actions">
+        <button class="button" type="submit" [disabled]="isSubmitting">{{ isSubmitting ? ('workflows.closing' | t) : ('workflows.confirmClose' | t) }}</button>
+        <button class="button button-secondary" type="button" (click)="cancelConfirmation()">{{ 'common.cancel' | t }}</button>
+      </div>
+    </div>
+  } @else {
+    <button class="button" type="submit" [disabled]="form.invalid || isSubmitting">
+      {{ isSubmitting ? ('workflows.updating' | t) : ('workflows.updateStatus' | t) }}
+    </button>
+  }
+</form>

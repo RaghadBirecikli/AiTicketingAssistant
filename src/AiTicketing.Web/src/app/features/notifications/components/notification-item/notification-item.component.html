@@ -1,0 +1,24 @@
+<article class="notification-item" [class.unread]="!notification.isRead">
+  <div class="item-header">
+    <div>
+      <p class="state">{{ notification.isRead ? ('notifications.read' | t) : ('notifications.unread' | t) }}</p>
+      <h3 dir="auto">{{ notification.title }}</h3>
+    </div>
+    <time class="bidi-isolate" [attr.datetime]="notification.createdAtUtc">{{ notification.createdAtUtc | localDateTime }}</time>
+  </div>
+
+  <p class="message" dir="auto">{{ notification.message }}</p>
+  <p class="type">{{ 'notifications.type' | t }}: {{ typeLabel() }}</p>
+
+  <div class="item-actions">
+    @if (notification.ticketId) {
+      <button class="text-button" type="button" (click)="openTicket.emit(notification)">{{ 'notifications.openTicket' | t }}</button>
+    }
+
+    @if (!notification.isRead) {
+      <button class="text-button" type="button" [disabled]="isMarking" (click)="markRead.emit(notification)">
+        {{ isMarking ? ('notifications.markingRead' | t) : ('notifications.markRead' | t) }}
+      </button>
+    }
+  </div>
+</article>

@@ -1,0 +1,13 @@
+<section class="conversation" aria-labelledby="conversation-heading">
+  <h2 id="conversation-heading">{{ 'ticketDetails.conversation' | t }}</h2>
+
+  @if (messages.length === 0) {
+    <div class="empty">{{ 'ticketDetails.noMessages' | t }}</div>
+  } @else {
+    <div class="timeline">
+      @for (message of messages; track message.id) {
+        <app-ticket-message [message]="message" />
+      }
+    </div>
+  }
+</section>

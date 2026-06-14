@@ -1,0 +1,41 @@
+.stat-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 6.5rem;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  box-shadow: none;
+  padding: 0.9rem 1rem;
+}
+
+.stat-icon {
+  display: inline-grid;
+  flex: 0 0 auto;
+  width: 2.35rem;
+  height: 2.35rem;
+  place-items: center;
+  border-radius: var(--radius-md);
+  background: var(--primary-soft);
+  color: var(--primary);
+}
+
+p {
+  margin: 0;
+}
+
+.label {
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+
+.value {
+  color: var(--text-primary);
+  font-size: clamp(1.55rem, 3vw, 1.9rem);
+  font-weight: 650;
+  line-height: 1;
+}

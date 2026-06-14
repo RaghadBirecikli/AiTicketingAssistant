@@ -1,0 +1,65 @@
+<form class="create-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+  @if (successMessage) {
+    <div class="feedback success" role="status" aria-live="polite">{{ successMessage }}</div>
+  }
+
+  @if (errorMessage) {
+    <div class="feedback error" role="alert">{{ errorMessage }}</div>
+  }
+
+  <div class="form-field">
+    <label for="ticketTitle">Title</label>
+    <input
+      id="ticketTitle"
+      type="text"
+      formControlName="title"
+      autocomplete="off"
+      [attr.maxlength]="titleMaxLength"
+      [attr.aria-invalid]="form.controls.title.invalid && form.controls.title.touched"
+      aria-describedby="ticketTitleHelp ticketTitleError"
+    />
+    <div id="ticketTitleHelp" class="field-help">{{ titleRemaining }} characters remaining</div>
+    <div id="ticketTitleError" class="field-error" aria-live="polite">
+      @if (form.controls.title.touched && form.controls.title.hasError('required')) {
+        Title is required.
+      } @else if (form.controls.title.touched && form.controls.title.hasError('whitespace')) {
+        Title cannot be blank.
+      } @else if (form.controls.title.touched && form.controls.title.hasError('maxlength')) {
+        Title must be 200 characters or fewer.
+      }
+    </div>
+  </div>
+
+  <div class="form-field">
+    <label for="ticketDescription">Description</label>
+    <textarea
+      id="ticketDescription"
+      formControlName="description"
+      rows="8"
+      [attr.maxlength]="descriptionMaxLength"
+      [attr.aria-invalid]="form.controls.description.invalid && form.controls.description.touched"
+      aria-describedby="ticketDescriptionHelp ticketDescriptionError"
+    ></textarea>
+    <div id="ticketDescriptionHelp" class="field-help">{{ descriptionRemaining }} characters remaining</div>
+    <div id="ticketDescriptionError" class="field-error" aria-live="polite">
+      @if (form.controls.description.touched && form.controls.description.hasError('required')) {
+        Description is required.
+      } @else if (form.controls.description.touched && form.controls.description.hasError('whitespace')) {
+        Description cannot be blank.
+      } @else if (form.controls.description.touched && form.controls.description.hasError('maxlength')) {
+        Description must be 4000 characters or fewer.
+      }
+    </div>
+  </div>
+
+  <div class="details-note">
+    Ticket source: <strong>Web</strong>
+  </div>
+
+  <div class="actions">
+    <button class="button" type="submit" [disabled]="form.invalid || isSubmitting">
+      {{ isSubmitting ? 'Creating...' : 'Create ticket' }}
+    </button>
+    <button class="button button-secondary" type="button" [disabled]="isSubmitting" (click)="cancel()">Cancel</button>
+  </div>
+</form>

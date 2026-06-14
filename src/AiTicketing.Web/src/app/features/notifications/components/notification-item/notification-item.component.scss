@@ -1,0 +1,85 @@
+.notification-item {
+  display: grid;
+  gap: 0.55rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  padding: 0.78rem;
+}
+
+.notification-item.unread {
+  border-color: color-mix(in srgb, var(--primary), var(--border) 48%);
+  background: color-mix(in srgb, var(--primary-soft), var(--surface) 48%);
+  box-shadow: inset 3px 0 0 var(--primary);
+}
+
+.item-header {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+h3,
+p {
+  margin: 0;
+}
+
+h3,
+.message {
+  overflow-wrap: anywhere;
+}
+
+h3 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+time,
+.type {
+  color: var(--text-muted);
+  font-size: 0.84rem;
+}
+
+.state {
+  color: var(--primary);
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.message {
+  color: var(--text-secondary);
+  line-height: 1.4;
+  white-space: pre-wrap;
+}
+
+.item-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.text-button {
+  border: 0;
+  background: transparent;
+  color: var(--primary);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+  padding: 0;
+  text-decoration: underline;
+}
+
+.text-button:disabled {
+  color: var(--text-muted);
+  cursor: not-allowed;
+}
+
+@media (max-width: 520px) {
+  .item-header {
+    display: grid;
+  }
+}

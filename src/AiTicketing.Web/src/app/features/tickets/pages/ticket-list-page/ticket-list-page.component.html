@@ -1,0 +1,174 @@
+<section class="ticket-list-page" aria-labelledby="ticket-list-heading">
+  <header class="page-header">
+    <div>
+      <p id="ticket-list-heading">{{ 'tickets.queue' | t: { role: localization.enumLabel('role', role()) } }}</p>
+      <span>{{ 'tickets.searchFilterSort' | t }}</span>
+    </div>
+  </header>
+
+  <form class="filters" [formGroup]="filtersForm" (ngSubmit)="applyFilters()">
+    <div class="form-field search-field">
+      <label for="search">{{ 'tickets.search' | t }}</label>
+      <input id="search" type="search" formControlName="search" [placeholder]="'tickets.searchPlaceholder' | t" />
+    </div>
+
+    <div class="form-field">
+      <label for="status">{{ 'tickets.status' | t }}</label>
+      <select id="status" formControlName="status">
+        <option value="">{{ 'tickets.allStatuses' | t }}</option>
+        @for (status of statuses; track status) {
+          <option [value]="status">{{ statusLabel(status) }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="form-field">
+      <label for="priority">{{ 'tickets.priority' | t }}</label>
+      <select id="priority" formControlName="priority">
+        <option value="">{{ 'tickets.allPriorities' | t }}</option>
+        @for (priority of priorities; track priority) {
+          <option [value]="priority">{{ priorityLabel(priority) }}</option>
+        }
+      </select>
+    </div>
+
+    @if (isAdmin()) {
+      <div class="form-field">
+        <label for="assignment">{{ 'tickets.assignedAgent' | t }}</label>
+        <select id="assignment" formControlName="assignment">
+          <option value="all">{{ 'tickets.allAgents' | t }}</option>
+          <option value="unassigned">{{ 'tickets.unassigned' | t }}</option>
+          @for (agent of agents(); track agent.id) {
+            <option [value]="agent.id">{{ agentName(agent) }}</option>
+          }
+        </select>
+      </div>
+    }
+
+    <div class="form-field">
+      <label for="sortBy">{{ 'tickets.sortBy' | t }}</label>
+      <select id="sortBy" formControlName="sortBy" (change)="changeSort()">
+        @for (sortField of sortFields; track sortField) {
+          <option [value]="sortField">{{ sortFieldLabel(sortField) }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="form-field">
+      <label for="sortDirection">{{ 'tickets.direction' | t }}</label>
+      <select id="sortDirection" formControlName="sortDirection" (change)="changeSort()">
+        @for (direction of sortDirections; track direction) {
+          <option [value]="direction">{{ sortDirectionLabel(direction) }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="filter-actions">
+      <button class="button" type="submit">{{ 'tickets.applyFilters' | t }}</button>
+      <button class="button button-secondary" type="button" (click)="resetFilters()">{{ 'tickets.resetFilters' | t }}</button>
+    </div>
+  </form>
+
+  <div class="list-toolbar" aria-live="polite">
+    <div>
+      @if (tickets(); as page) {
+        {{ 'tickets.ticketsFound' | t: { count: page.totalCount } }}
+      } @else {
+        {{ 'tickets.results' | t }}
+      }
+    </div>
+
+    <div class="form-field compact">
+      <label for="pageSize">{{ 'tickets.pageSize' | t }}</label>
+      <select id="pageSize" [formControl]="filtersForm.controls.pageSize" (change)="changePageSize()">
+        @for (size of pageSizes; track size) {
+          <option [value]="size">{{ size }}</option>
+        }
+      </select>
+    </div>
+  </div>
+
+  @if (isLoading()) {
+    <div class="state-panel loading" role="status">{{ 'tickets.loading' | t }}</div>
+  }
+
+  @if (errorMessage(); as message) {
+    <div class="state-panel error" role="alert">
+      <p>{{ message }}</p>
+      <button class="button" type="button" (click)="retry()">{{ 'common.retry' | t }}</button>
+    </div>
+  }
+
+  @if (!isLoading() && !errorMessage() && tickets(); as page) {
+    @if (page.items.length === 0) {
+      <div class="state-panel empty-state">
+        <strong>{{ 'tickets.emptyTitle' | t }}</strong>
+        <span>{{ 'tickets.emptyDescription' | t }}</span>
+      </div>
+    } @else {
+      <div class="table-wrap">
+        <table>
+          <caption class="sr-only">{{ 'tickets.listCaption' | t }}</caption>
+          <thead>
+            <tr>
+              <th scope="col">{{ 'tickets.ticket' | t }}</th>
+              <th scope="col">{{ 'tickets.status' | t }}</th>
+              <th scope="col">{{ 'tickets.priority' | t }}</th>
+              <th scope="col">{{ 'tickets.category' | t }}</th>
+              <th scope="col">{{ 'tickets.customer' | t }}</th>
+              <th scope="col">{{ 'tickets.assigned' | t }}</th>
+              <th scope="col">{{ 'tickets.created' | t }}</th>
+              <th scope="col">{{ 'tickets.updated' | t }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (ticket of page.items; track ticket.id) {
+              <tr>
+                <td [attr.data-label]="'tickets.ticket' | t">
+                  <a [routerLink]="ticketDetailsRoute(ticket.id)" [queryParams]="ticketDetailsQueryParams()" dir="auto">{{ ticket.title }}</a>
+                  <span dir="auto">{{ ticket.description }}</span>
+                </td>
+                <td [attr.data-label]="'tickets.status' | t">
+                  <span
+                    class="pill"
+                    [class.badge-status-open]="ticket.status === 'Open'"
+                    [class.badge-status-inprogress]="ticket.status === 'InProgress'"
+                    [class.badge-status-waiting]="ticket.status === 'WaitingForCustomer'"
+                    [class.badge-status-resolved]="ticket.status === 'Resolved'"
+                    [class.badge-status-closed]="ticket.status === 'Closed'">
+                    {{ statusLabel(ticket.status) }}
+                  </span>
+                </td>
+                <td [attr.data-label]="'tickets.priority' | t">
+                  <span
+                    class="pill"
+                    [class.badge-priority-medium]="ticket.priority === 'Medium'"
+                    [class.badge-priority-high]="ticket.priority === 'High'"
+                    [class.badge-priority-urgent]="ticket.priority === 'Urgent'">
+                    {{ priorityLabel(ticket.priority) }}
+                  </span>
+                </td>
+                <td [attr.data-label]="'tickets.category' | t"><span class="category-chip">{{ categoryLabel(ticket.category) }}</span></td>
+                <td
+                  [attr.data-label]="'tickets.customer' | t"
+                  [attr.dir]="customerDirection(ticket)"
+                  [class.ltr-token]="customerDirection(ticket) === 'ltr'">
+                  {{ ticket.customerName || ticket.customerEmail || ('tickets.notProvided' | t) }}
+                </td>
+                <td [attr.data-label]="'tickets.assigned' | t" dir="auto">{{ assignedLabel(ticket.assignedToUserId) }}</td>
+                <td [attr.data-label]="'tickets.created' | t"><span class="bidi-isolate">{{ ticket.createdAtUtc | localDateTime }}</span></td>
+                <td [attr.data-label]="'tickets.updated' | t"><span class="bidi-isolate">{{ ticket.updatedAtUtc | localDateTime }}</span></td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <nav class="pagination" [attr.aria-label]="'tickets.pages' | t">
+        <button class="button button-secondary" type="button" [disabled]="!canGoPrevious()" (click)="previousPage()">{{ 'tickets.previous' | t }}</button>
+        <span>{{ 'tickets.pageOf' | t: { page: page.page, total: page.totalPages || 1 } }}</span>
+        <button class="button button-secondary" type="button" [disabled]="!canGoNext()" (click)="nextPage()">{{ 'tickets.next' | t }}</button>
+      </nav>
+    }
+  }
+</section>

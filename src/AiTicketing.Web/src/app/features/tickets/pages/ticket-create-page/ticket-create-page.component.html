@@ -1,0 +1,14 @@
+<section class="create-page" aria-labelledby="ticket-create-heading">
+  <header class="create-header">
+    <p id="ticket-create-heading">Customer support</p>
+    <p>Send the support team the details they need to start investigating your request.</p>
+  </header>
+
+  <app-ticket-create-form
+    [isSubmitting]="isSubmitting()"
+    [errorMessage]="errorMessage()"
+    [successMessage]="successMessage()"
+    (createTicket)="createTicket($event)"
+    (cancelCreate)="cancel()"
+  />
+</section>

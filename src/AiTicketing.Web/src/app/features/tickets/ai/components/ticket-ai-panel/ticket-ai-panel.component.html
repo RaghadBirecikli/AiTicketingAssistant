@@ -1,0 +1,216 @@
+<section class="ai-panel" aria-labelledby="ticket-ai-heading">
+  <div class="ai-heading">
+    <span class="ai-mark" aria-hidden="true"><app-ui-icon name="ai" /></span>
+    <div>
+      <p>{{ 'ai.eyebrow' | t }}</p>
+      <h2 id="ticket-ai-heading">{{ 'ai.assistant' | t }}</h2>
+    </div>
+    <span class="badge-ai">{{ 'ai.advisoryBadge' | t }}</span>
+  </div>
+
+  <div class="ai-tabs" role="tablist" [attr.aria-label]="'ai.actions' | t">
+    <button type="button" role="tab" [attr.aria-selected]="activeTab() === 'reply'" [class.active]="activeTab() === 'reply'" (click)="setActiveTab('reply')">{{ 'ai.reply' | t }}</button>
+    <button type="button" role="tab" [attr.aria-selected]="activeTab() === 'summary'" [class.active]="activeTab() === 'summary'" (click)="setActiveTab('summary')">{{ 'ai.summary' | t }}</button>
+    <button type="button" role="tab" [attr.aria-selected]="activeTab() === 'triage'" [class.active]="activeTab() === 'triage'" (click)="setActiveTab('triage')">{{ 'ai.triage' | t }}</button>
+  </div>
+
+  @if (activeTab() === 'reply') {
+    <article class="ai-card" aria-labelledby="suggested-reply-heading">
+      <div class="card-heading">
+        <h3 id="suggested-reply-heading">{{ 'ai.suggestedReply' | t }}</h3>
+        <p>{{ 'ai.replyDescription' | t }}</p>
+      </div>
+
+      <form class="ai-form" [formGroup]="replyForm" (ngSubmit)="suggestReply()" novalidate>
+        <div class="form-field">
+          <label for="reply-instruction">{{ 'ai.optionalInstruction' | t }}</label>
+          <textarea
+            id="reply-instruction"
+            formControlName="instruction"
+            rows="3"
+            [attr.maxlength]="instructionMaxLength + 1"
+            aria-describedby="reply-instruction-help reply-instruction-error"></textarea>
+          <div id="reply-instruction-help" class="field-help">
+            {{ 'ai.optionalInstructionHelp' | t: { count: instructionMaxLength - replyForm.controls.instruction.value.length } }}
+          </div>
+          <div id="reply-instruction-error" class="field-error" aria-live="polite">
+            @if (replyForm.controls.instruction.touched && replyForm.controls.instruction.hasError('maxlength')) {
+              {{ 'ai.instructionMaxLength' | t: { count: instructionMaxLength } }}
+            }
+          </div>
+        </div>
+
+        <div class="action-row">
+          <button class="button" type="submit" [disabled]="replyForm.invalid || replyState() === 'loading'">
+            <app-ui-icon name="ai" />
+            {{ replyState() === 'loading' ? ('ai.generating' | t) : suggestedReply() ? ('ai.regenerateReply' | t) : ('ai.generateReply' | t) }}
+          </button>
+          @if (suggestedReply()) {
+            <button class="button button-secondary" type="button" (click)="clearReply()">{{ 'common.clear' | t }}</button>
+          }
+        </div>
+      </form>
+
+      @if (replyState() === 'loading') {
+        <div class="feedback" role="status" aria-live="polite">{{ 'ai.generatingReply' | t }}</div>
+      }
+      @if (replyError(); as error) {
+        <div class="feedback error" role="alert">{{ error }}</div>
+      }
+      @if (suggestedReply(); as reply) {
+        <div class="ai-result" aria-labelledby="suggested-reply-result-heading">
+          <h4 id="suggested-reply-result-heading">{{ 'ai.replyResult' | t }}</h4>
+          <pre dir="auto">{{ reply }}</pre>
+          <p class="advisory">{{ 'ai.replyAdvisory' | t }}</p>
+          <div class="action-row">
+            <button class="button button-secondary" type="button" (click)="copyReply()">{{ 'common.copy' | t }}</button>
+            <button class="button" type="button" (click)="insertSuggestedReply()"><app-ui-icon name="message" /> {{ 'ai.insert' | t }}</button>
+          </div>
+          @if (replyCopyMessage(); as copyMessage) {
+            <div class="feedback compact" role="status" aria-live="polite">{{ copyMessage }}</div>
+          }
+        </div>
+      } @else {
+        <div class="empty-ai">{{ 'ai.noReply' | t }}</div>
+      }
+    </article>
+  }
+
+  @if (activeTab() === 'summary') {
+    <article class="ai-card" aria-labelledby="ticket-summary-ai-heading">
+      <div class="card-heading">
+        <h3 id="ticket-summary-ai-heading">{{ 'ai.ticketSummary' | t }}</h3>
+        <p>{{ 'ai.plainSummaryDescription' | t }}</p>
+      </div>
+
+      <form class="ai-form" [formGroup]="summaryForm" (ngSubmit)="summarize()" novalidate>
+        @if (canIncludeInternalNotes) {
+          <label class="checkbox-field">
+            <input type="checkbox" formControlName="includeInternalNotes" />
+            <span>{{ 'ai.includeInternalNotes' | t }}</span>
+          </label>
+          <p class="field-help">{{ 'ai.internalNotesHelp' | t }}</p>
+        }
+
+        <div class="action-row">
+          <button class="button" type="submit" [disabled]="summaryState() === 'loading'">
+            <app-ui-icon name="ai" />
+            {{ summaryState() === 'loading' ? ('ai.summarizing' | t) : summary() ? ('ai.regenerateSummary' | t) : ('ai.generateSummary' | t) }}
+          </button>
+          @if (summary()) {
+            <button class="button button-secondary" type="button" (click)="clearSummary()">{{ 'common.clear' | t }}</button>
+          }
+        </div>
+      </form>
+
+      @if (summaryState() === 'loading') {
+        <div class="feedback" role="status" aria-live="polite">{{ 'ai.generatingSummary' | t }}</div>
+      }
+      @if (summaryError(); as error) {
+        <div class="feedback error" role="alert">{{ error }}</div>
+      }
+      @if (summary(); as value) {
+        <div class="ai-result" aria-labelledby="summary-result-heading">
+          <h4 id="summary-result-heading">{{ 'ai.summary' | t }}</h4>
+          <pre dir="auto">{{ value }}</pre>
+          <div class="action-row">
+            <button class="button button-secondary" type="button" (click)="copySummary()">{{ 'common.copy' | t }}</button>
+          </div>
+          @if (summaryCopyMessage(); as copyMessage) {
+            <div class="feedback compact" role="status" aria-live="polite">{{ copyMessage }}</div>
+          }
+        </div>
+      } @else {
+        <div class="empty-ai">{{ 'ai.noSummary' | t }}</div>
+      }
+    </article>
+  }
+
+  @if (activeTab() === 'triage') {
+    <article class="ai-card" aria-labelledby="ticket-triage-heading">
+      <div class="card-heading">
+        <h3 id="ticket-triage-heading">{{ 'ai.triageTitle' | t }}</h3>
+        <p>{{ 'ai.triageDescription' | t }}</p>
+      </div>
+
+      <form class="ai-form" [formGroup]="triageForm" (ngSubmit)="suggestTriage()" novalidate>
+        <div class="form-field">
+          <label for="triage-instruction">{{ 'ai.optionalInstruction' | t }}</label>
+          <textarea
+            id="triage-instruction"
+            formControlName="instruction"
+            rows="3"
+            [attr.maxlength]="instructionMaxLength + 1"
+            aria-describedby="triage-instruction-help triage-instruction-error"></textarea>
+          <div id="triage-instruction-help" class="field-help">
+            {{ 'ai.triageInstructionHelp' | t: { count: instructionMaxLength - triageForm.controls.instruction.value.length } }}
+          </div>
+          <div id="triage-instruction-error" class="field-error" aria-live="polite">
+            @if (triageForm.controls.instruction.touched && triageForm.controls.instruction.hasError('maxlength')) {
+              {{ 'ai.instructionMaxLength' | t: { count: instructionMaxLength } }}
+            }
+          </div>
+        </div>
+
+        <div class="action-row">
+          <button class="button" type="submit" [disabled]="triageForm.invalid || triageState() === 'loading'">
+            <app-ui-icon name="ai" />
+            {{ triageState() === 'loading' ? ('ai.analyzing' | t) : triage() ? ('ai.regenerateTriage' | t) : ('ai.generateTriage' | t) }}
+          </button>
+          @if (triage()) {
+            <button class="button button-secondary" type="button" (click)="clearTriage()">{{ 'common.clear' | t }}</button>
+          }
+        </div>
+      </form>
+
+      @if (triageState() === 'loading') {
+        <div class="feedback" role="status" aria-live="polite">{{ 'ai.generatingTriage' | t }}</div>
+      }
+      @if (triageError(); as error) {
+        <div class="feedback error" role="alert">{{ error }}</div>
+      }
+      @if (triage(); as value) {
+        <div class="ai-result" aria-labelledby="triage-result-heading">
+          <h4 id="triage-result-heading">{{ 'ai.triageResult' | t }}</h4>
+          <p class="advisory">{{ 'ai.triageAdvisory' | t }}</p>
+          <dl class="triage-list">
+            <div>
+              <dt>{{ 'ai.currentPriority' | t }}</dt>
+              <dd>{{ currentPriorityLabel(value.currentPriority) }}</dd>
+            </div>
+            <div>
+              <dt>{{ 'ai.suggestedPriority' | t }}</dt>
+              <dd>{{ suggestedPriorityLabel(value.suggestedPriority) }}</dd>
+            </div>
+            <div>
+              <dt>{{ 'ai.suggestedCategory' | t }}</dt>
+              <dd>{{ suggestedCategoryLabel(value.suggestedCategory) }}</dd>
+            </div>
+            <div>
+              <dt>{{ 'ai.escalationRecommended' | t }}</dt>
+              <dd>{{ value.escalationRecommended ? ('ai.yes' | t) : ('ai.no' | t) }}</dd>
+            </div>
+            @if (value.escalationReason) {
+              <div>
+                <dt>{{ 'ai.escalationReason' | t }}</dt>
+                <dd dir="auto">{{ value.escalationReason }}</dd>
+              </div>
+            }
+            <div>
+              <dt>{{ 'ai.rationale' | t }}</dt>
+              <dd dir="auto">{{ value.rationale }}</dd>
+            </div>
+          </dl>
+          <div class="action-row">
+            <button class="button button-secondary" type="button" (click)="copyTriage()">{{ 'common.copy' | t }}</button>
+          </div>
+          @if (triageCopyMessage(); as copyMessage) {
+            <div class="feedback compact" role="status" aria-live="polite">{{ copyMessage }}</div>
+          }
+        </div>
+      } @else {
+        <div class="empty-ai">{{ 'ai.noTriage' | t }}</div>
+      }
+    </article>
+  }
+</section>

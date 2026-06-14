@@ -1,0 +1,28 @@
+.create-page {
+  display: grid;
+  gap: 1rem;
+  max-width: 820px;
+  margin-inline: auto;
+}
+
+.create-header {
+  display: grid;
+  gap: 0.45rem;
+  border-bottom: 1px solid var(--border);
+  padding-block-end: 0.85rem;
+}
+
+.create-header p {
+  margin: 0;
+}
+
+.create-header > p:first-child {
+  color: var(--text-primary);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.create-header p:last-child {
+  color: var(--text-secondary);
+}

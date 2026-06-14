@@ -1,0 +1,66 @@
+.composer {
+  display: grid;
+  gap: 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  box-shadow: none;
+  padding: clamp(0.9rem, 2vw, 1.1rem);
+}
+
+.composer.internal {
+  border-color: color-mix(in srgb, var(--internal-note), var(--border) 50%);
+  background: linear-gradient(180deg, var(--internal-note-soft), var(--surface));
+}
+
+.composer-heading {
+  display: grid;
+  gap: 0.2rem;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.75rem;
+}
+
+h2,
+p {
+  margin: 0;
+}
+
+h2 {
+  font-size: 0.98rem;
+  font-weight: 600;
+}
+
+p,
+.field-help {
+  color: var(--text-secondary);
+}
+
+textarea {
+  min-height: 7.5rem;
+  border-radius: var(--radius-md);
+}
+
+.composer.internal textarea {
+  border-color: color-mix(in srgb, var(--internal-note), var(--border) 52%);
+  background: color-mix(in srgb, var(--surface), var(--internal-note-soft) 35%);
+}
+
+.feedback {
+  border-radius: var(--radius-sm);
+  padding: 0.75rem;
+}
+
+.field-error {
+  min-height: 1.2rem;
+}
+
+button[type="submit"] {
+  justify-self: start;
+  min-width: 9rem;
+}
+
+@media (max-width: 560px) {
+  button[type="submit"] {
+    width: 100%;
+  }
+}

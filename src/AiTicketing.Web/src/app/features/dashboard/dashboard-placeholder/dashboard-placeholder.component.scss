@@ -1,0 +1,20 @@
+.placeholder {
+  display: grid;
+  gap: 0.5rem;
+  max-width: 760px;
+}
+
+.placeholder p,
+.placeholder h1 {
+  margin: 0;
+}
+
+.placeholder > p:first-child {
+  color: #52617b;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+h1 {
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+}

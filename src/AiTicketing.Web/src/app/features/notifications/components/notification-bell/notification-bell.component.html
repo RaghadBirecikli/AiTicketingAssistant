@@ -1,0 +1,24 @@
+<div class="notification-bell">
+  <button
+    class="bell-button"
+    type="button"
+    [attr.aria-label]="notifications.accessibleLabel()"
+    [attr.aria-expanded]="notifications.panelOpen()"
+    aria-controls="notification-panel"
+    (click)="notifications.togglePanel()"
+  >
+    <span class="bell-glyph" aria-hidden="true"><app-ui-icon name="bell" /></span>
+    <span>{{ 'notifications.trigger' | t }}</span>
+    @if (notifications.unreadCount() > 0) {
+      <span class="badge" [attr.aria-label]="'notifications.unreadBadge' | t: { count: notifications.unreadCount() }">
+        {{ notifications.badgeText() }}
+      </span>
+    }
+  </button>
+
+  @if (notifications.panelOpen()) {
+    <div id="notification-panel" class="panel-wrapper">
+      <app-notification-panel (closePanel)="notifications.closePanel()" />
+    </div>
+  }
+</div>

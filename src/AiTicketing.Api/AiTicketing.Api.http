@@ -1,0 +1,17 @@
+@AiTicketing.Api_HostAddress = http://localhost:5143
+
+GET {{AiTicketing.Api_HostAddress}}/health
+Accept: application/json
+
+###
+
+POST {{AiTicketing.Api_HostAddress}}/api/ai-ticket-assistant/analyze
+Content-Type: application/json
+
+{
+  "title": "Cannot log in",
+  "description": "The customer cannot access their account after resetting their password.",
+  "customerEmail": "customer@example.com"
+}
+
+###

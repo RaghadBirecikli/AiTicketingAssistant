@@ -1,0 +1,69 @@
+.notification-bell {
+  position: relative;
+}
+
+.bell-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-elevated);
+  color: var(--text-primary);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 500;
+  min-height: 2.3rem;
+  padding: 0.35rem 0.65rem;
+}
+
+.bell-button:hover,
+.bell-button:focus-visible {
+  border-color: var(--primary);
+  background: var(--primary-soft);
+}
+
+.bell-glyph {
+  display: inline-grid;
+  width: 1.55rem;
+  height: 1.55rem;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--surface-muted);
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.badge {
+  min-width: 1.45rem;
+  min-height: 1.45rem;
+  border-color: color-mix(in srgb, var(--danger), var(--border) 45%);
+  background: var(--danger);
+  color: #fff;
+  font-size: 0.75rem;
+}
+
+.panel-wrapper {
+  position: absolute;
+  inset-block-start: calc(100% + 0.75rem);
+  inset-inline-end: 0;
+  z-index: var(--z-popover);
+}
+
+@media (max-width: 680px) {
+  .bell-button {
+    justify-content: center;
+    width: 2.3rem;
+    padding-inline: 0.35rem;
+  }
+
+  .bell-button > span:nth-child(2) {
+    display: none;
+  }
+
+  .panel-wrapper {
+    position: fixed;
+    inset: auto 0 0;
+    transform: none;
+  }
+}

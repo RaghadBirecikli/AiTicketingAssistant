@@ -1,0 +1,54 @@
+<section class="login-page" aria-labelledby="login-heading">
+  <div class="login-identity" aria-hidden="true">
+    <div class="brand-lockup">
+      <span class="brand-mark"><app-ui-icon name="ai" /></span>
+      <div>
+        <strong>{{ 'common.appName' | t }}</strong>
+        <small>{{ 'common.supportFocused' | t }}</small>
+      </div>
+    </div>
+    <div class="identity-panel">
+      <p>{{ 'auth.eyebrow' | t }}</p>
+      <h2>{{ 'auth.hero' | t }}</h2>
+    </div>
+  </div>
+
+  <form class="login-card" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <app-language-selector class="login-language" />
+
+    <div class="login-heading">
+      <p>{{ 'auth.welcome' | t }}</p>
+      <h1 id="login-heading">{{ 'auth.signIn' | t }}</h1>
+      <span>{{ 'auth.continue' | t }}</span>
+    </div>
+
+    @if (errorMessage()) {
+      <div class="alert-error" role="alert">{{ errorMessage() }}</div>
+    }
+
+    <div class="form-field">
+      <label for="email">{{ 'auth.email' | t }}</label>
+      <input id="email" type="email" autocomplete="email" formControlName="email" dir="ltr" />
+      @if (form.controls.email.touched && form.controls.email.hasError('required')) {
+        <span class="field-error">{{ 'auth.emailRequired' | t }}</span>
+      }
+      @if (form.controls.email.touched && form.controls.email.hasError('email')) {
+        <span class="field-error">{{ 'auth.emailInvalid' | t }}</span>
+      }
+    </div>
+
+    <div class="form-field">
+      <label for="password">{{ 'auth.password' | t }}</label>
+      <input id="password" type="password" autocomplete="current-password" formControlName="password" dir="ltr" />
+      @if (form.controls.password.touched && form.controls.password.hasError('required')) {
+        <span class="field-error">{{ 'auth.passwordRequired' | t }}</span>
+      }
+    </div>
+
+    <button class="button" type="submit" [disabled]="isSubmitting()">
+      {{ isSubmitting() ? ('auth.signingIn' | t) : ('auth.signIn' | t) }}
+    </button>
+
+    <a routerLink="/unauthorized">{{ 'auth.needAccess' | t }}</a>
+  </form>
+</section>

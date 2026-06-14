@@ -1,0 +1,149 @@
+<div class="shell" [class.sidebar-collapsed]="isSidebarCollapsed()" [class.mobile-nav-open]="isMobileNavOpen()">
+  <aside class="sidebar" [attr.aria-label]="'navigation.primary' | t">
+    <div class="brand-row">
+      <a class="brand" routerLink="/" (click)="closeMobileNav()" [attr.aria-label]="'navigation.home' | t">
+        <span class="brand-mark" aria-hidden="true">
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+        </span>
+        <span class="brand-copy">
+          <strong>{{ 'common.productShort' | t }}</strong>
+          <small>{{ 'common.assistant' | t }}</small>
+        </span>
+      </a>
+
+      <button
+        class="icon-button sidebar-toggle"
+        type="button"
+        [attr.aria-label]="isSidebarCollapsed() ? ('navigation.expandSidebar' | t) : ('navigation.collapseSidebar' | t)"
+        (click)="toggleSidebar()">
+        <app-ui-icon class="directional-icon" [name]="isSidebarCollapsed() ? 'chevron-right' : 'chevron-left'" />
+      </button>
+    </div>
+
+    <nav class="side-nav">
+      @for (item of navigation(); track item.labelKey) {
+        <a
+          [routerLink]="item.route"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: item.route === '/' || !item.route.endsWith('/tickets') }"
+          [attr.title]="isSidebarCollapsed() ? (item.labelKey | t) : null"
+          (click)="closeMobileNav()">
+          <span class="nav-icon" aria-hidden="true"><app-ui-icon [name]="item.icon" /></span>
+          <span class="nav-label">{{ item.labelKey | t }}</span>
+        </a>
+      }
+    </nav>
+
+    <div class="sidebar-footer">
+      <span class="role-pill">{{ localization.enumLabel('role', role()) }}</span>
+      <span class="sidebar-email" dir="ltr">{{ email() }}</span>
+    </div>
+  </aside>
+
+  @if (isMobileNavOpen()) {
+    <button class="mobile-scrim" type="button" [attr.aria-label]="'navigation.closeNavigation' | t" (click)="closeMobileNav()"></button>
+  }
+
+  <div class="workspace">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button
+          class="icon-button mobile-menu"
+          type="button"
+          [attr.aria-expanded]="isMobileNavOpen()"
+          [attr.aria-label]="'navigation.openNavigation' | t"
+          (click)="toggleMobileNav()">
+          <app-ui-icon name="menu" />
+        </button>
+        <div class="page-title-block">
+          <h1>{{ pageTitle() }}</h1>
+        </div>
+      </div>
+
+      <div class="topbar-actions">
+        <app-language-selector />
+
+        <div class="theme-menu-wrapper">
+          <button
+            class="icon-button theme-trigger"
+            type="button"
+            aria-haspopup="menu"
+            [attr.aria-expanded]="isThemeMenuOpen()"
+            [attr.aria-label]="themeButtonLabel()"
+            (click)="toggleThemeMenu()"
+            (keydown)="onThemeMenuKeydown($event)">
+            <app-ui-icon [name]="themeIcon()" />
+          </button>
+
+          @if (isThemeMenuOpen()) {
+            <div class="theme-menu" role="menu" [attr.aria-label]="'theme.menu' | t" (keydown)="onThemeMenuKeydown($event)">
+              <button
+                type="button"
+                role="menuitemradio"
+                [attr.data-selected-label]="'common.selected' | t"
+                [attr.aria-checked]="isThemeSelected('system')"
+                (click)="setTheme('system')">
+                <span>{{ 'theme.system' | t }}</span>
+                <small>{{ 'theme.currently' | t: { theme: theme.effectiveTheme() } }}</small>
+              </button>
+              <button
+                type="button"
+                role="menuitemradio"
+                [attr.data-selected-label]="'common.selected' | t"
+                [attr.aria-checked]="isThemeSelected('light')"
+                (click)="setTheme('light')">
+                <span>{{ 'theme.light' | t }}</span>
+              </button>
+              <button
+                type="button"
+                role="menuitemradio"
+                [attr.data-selected-label]="'common.selected' | t"
+                [attr.aria-checked]="isThemeSelected('dark')"
+                (click)="setTheme('dark')">
+                <span>{{ 'theme.dark' | t }}</span>
+              </button>
+            </div>
+          }
+        </div>
+
+        <app-notification-bell />
+
+        <div class="user-menu">
+          <button
+            class="user-menu-button"
+            type="button"
+            [attr.aria-expanded]="isUserMenuOpen()"
+            aria-haspopup="menu"
+            (click)="toggleUserMenu()">
+            <span class="avatar" aria-hidden="true">{{ initials() }}</span>
+            <span class="user-menu-copy">
+              <strong dir="auto">{{ displayName() }}</strong>
+              <small>{{ localization.enumLabel('role', role()) }}</small>
+            </span>
+          </button>
+
+          @if (isUserMenuOpen()) {
+            <div class="user-popover" role="menu">
+              <div class="user-popover-header">
+                <span class="avatar large" aria-hidden="true">{{ initials() }}</span>
+                <div>
+                  <strong dir="auto">{{ displayName() }}</strong>
+                  <small dir="ltr">{{ email() }}</small>
+                  <span class="role-pill">{{ localization.enumLabel('role', role()) }}</span>
+                </div>
+              </div>
+              <button class="button button-secondary" type="button" role="menuitem" (click)="logout()">{{ 'auth.logout' | t }}</button>
+            </div>
+          }
+        </div>
+      </div>
+    </header>
+
+    <main class="content" tabindex="-1" (click)="closeUserMenu(); closeThemeMenu()">
+      <router-outlet />
+    </main>
+  </div>
+</div>

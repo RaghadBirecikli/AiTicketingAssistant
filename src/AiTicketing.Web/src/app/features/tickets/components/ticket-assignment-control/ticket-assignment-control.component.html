@@ -1,0 +1,34 @@
+<form class="workflow-card" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+  <div>
+    <h2>{{ 'workflows.assignment' | t }}</h2>
+    <p>{{ 'workflows.assignmentDescription' | t }}</p>
+  </div>
+
+  @if (successMessage) {
+    <div class="feedback success" role="status" aria-live="polite">{{ successMessage }}</div>
+  }
+
+  @if (errorMessage) {
+    <div class="feedback error" role="alert">{{ errorMessage }}</div>
+  }
+
+  <div class="form-field">
+    <label for="assignedToUserId">{{ 'tickets.assignedAgent' | t }}</label>
+    <select id="assignedToUserId" formControlName="assignedToUserId">
+      <option value="">{{ 'workflows.selectAgent' | t }}</option>
+      @for (agent of agents; track agent.id) {
+        <option [value]="agent.id">{{ agent.displayName || agent.email || localization.enumLabel('role', 'Agent') }}</option>
+      }
+    </select>
+    @if (agents.length === 0) {
+      <span class="field-help">{{ 'workflows.noAgents' | t }}</span>
+    }
+    @if (form.controls.assignedToUserId.touched && form.controls.assignedToUserId.hasError('required')) {
+      <span class="field-error">{{ 'workflows.chooseAgent' | t }}</span>
+    }
+  </div>
+
+  <button class="button" type="submit" [disabled]="form.invalid || isSubmitting || agents.length === 0">
+    {{ isSubmitting ? ('workflows.assigning' | t) : ('workflows.assignTicket' | t) }}
+  </button>
+</form>
