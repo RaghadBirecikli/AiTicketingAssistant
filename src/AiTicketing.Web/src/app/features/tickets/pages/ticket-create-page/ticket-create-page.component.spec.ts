@@ -134,7 +134,7 @@ describe('TicketCreatePageComponent', () => {
 
     ticketService.createTicket.and.returnValue(throwError(() => new Error('server stack')));
     component.createTicket({ title: 'Payment issue', description: 'Cannot complete payment.' });
-    expect(component.errorMessage()).toBe('The ticket could not be created. Please try again.');
+    expect(component.errorMessage()).toBe('Ticket could not be created. Please try again.');
   });
 
   it('cancel navigates back to the role ticket list', () => {

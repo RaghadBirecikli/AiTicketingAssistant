@@ -1,5 +1,8 @@
 <section class="details-page" aria-labelledby="ticket-details-heading">
-  <button class="button button-secondary back-button" type="button" (click)="backToTickets()">{{ 'ticketDetails.back' | t }}</button>
+  <button class="back-button" type="button" [attr.aria-label]="'ticketDetails.back' | t" (click)="backToTickets()">
+    <app-ui-icon class="directional-icon" name="chevron-left" />
+    <span>{{ 'ticketDetails.back' | t }}</span>
+  </button>
 
   @if (isLoading()) {
     <div class="state-panel" role="status">{{ 'ticketDetails.loading' | t }}</div>
@@ -16,7 +19,6 @@
 
   @if (!isLoading() && !errorMessage() && ticket(); as item) {
     <header class="details-header">
-      <p>{{ role() === 'Admin' ? ('ticketDetails.adminView' | t) : role() === 'Agent' ? ('ticketDetails.agentView' | t) : ('ticketDetails.customerView' | t) }}</p>
       <h1 id="ticket-details-heading" dir="auto">{{ item.title }}</h1>
       <p class="description" dir="auto">{{ item.description }}</p>
       <div class="header-meta" [attr.aria-label]="'ticketDetails.metadata' | t">
@@ -28,36 +30,47 @@
 
     <div class="details-layout">
       <aside class="summary-column" aria-label="Ticket controls">
-        <app-ticket-summary-card
-          [ticket]="item"
-          [agents]="agents()"
-          [currentUserId]="currentUser()?.id ?? null"
-          [currentUserDisplayName]="currentUserDisplayName()" />
-
-        @if (canAssignTicket()) {
-          <app-ticket-assignment-control
+        <details class="details-section ticket-info-section" open>
+          <summary>{{ 'ticketDetails.summary' | t }}</summary>
+          <app-ticket-summary-card
+            [ticket]="item"
             [agents]="agents()"
-            [currentAssignedToUserId]="item.assignedToUserId"
-            [isSubmitting]="isAssigning()"
-            [errorMessage]="assignmentError()"
-            [successMessage]="assignmentSuccess()"
-            (assignTicket)="assignTicket($event)" />
-        }
+            [currentUserId]="currentUser()?.id ?? null"
+            [currentUserDisplayName]="currentUserDisplayName()" />
+        </details>
 
-        @if (canChangeStatus()) {
-          <app-ticket-status-control
-            [currentStatus]="item.status"
-            [isSubmitting]="isChangingStatus()"
-            [errorMessage]="statusError()"
-            [successMessage]="statusSuccess()"
-            (changeStatus)="changeStatus($event)" />
+        @if (canAssignTicket() || canChangeStatus()) {
+          <details class="details-section workflow-section" open>
+            <summary>{{ 'workflows.assignment' | t }}</summary>
+            @if (canAssignTicket()) {
+              <app-ticket-assignment-control
+                [agents]="agents()"
+                [currentAssignedToUserId]="item.assignedToUserId"
+                [isSubmitting]="isAssigning()"
+                [errorMessage]="assignmentError()"
+                [successMessage]="assignmentSuccess()"
+                (assignTicket)="assignTicket($event)" />
+            }
+
+            @if (canChangeStatus()) {
+              <app-ticket-status-control
+                [currentStatus]="item.status"
+                [isSubmitting]="isChangingStatus()"
+                [errorMessage]="statusError()"
+                [successMessage]="statusSuccess()"
+                (changeStatus)="changeStatus($event)" />
+            }
+          </details>
         }
 
         @if (canUseAi()) {
-          <app-ticket-ai-panel
-            [ticketId]="item.id"
-            [role]="role()"
-            (insertReply)="insertSuggestedReply($event)" />
+          <details class="details-section ai-section" open>
+            <summary>{{ 'ai.assistant' | t }}</summary>
+            <app-ticket-ai-panel
+              [ticketId]="item.id"
+              [role]="role()"
+              (insertReply)="insertSuggestedReply($event)" />
+          </details>
         }
       </aside>
       <div class="conversation-column">

@@ -21,6 +21,21 @@ export class NotificationItemComponent {
   @Output() readonly markRead = new EventEmitter<NotificationResponse>();
   @Output() readonly openTicket = new EventEmitter<NotificationResponse>();
 
+  openRelatedTicket(): void {
+    if (this.notification.ticketId) {
+      this.openTicket.emit(this.notification);
+    }
+  }
+
+  onItemKeydown(event: KeyboardEvent): void {
+    if (!this.notification.ticketId || (event.key !== 'Enter' && event.key !== ' ')) {
+      return;
+    }
+
+    event.preventDefault();
+    this.openRelatedTicket();
+  }
+
   typeLabel(): string {
     return this.notification.type
       ? this.localization.enumLabel('notificationType', this.notification.type)

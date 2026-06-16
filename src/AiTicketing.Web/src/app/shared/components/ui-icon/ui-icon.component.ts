@@ -10,6 +10,7 @@ export type UiIconName =
   | 'chevron-right'
   | 'clock'
   | 'dashboard'
+  | 'globe'
   | 'menu'
   | 'message'
   | 'moon'
@@ -67,6 +68,12 @@ export type UiIconName =
           <path d="M4 13a8 8 0 0 1 16 0" />
           <path d="M12 13l4-4" />
           <path d="M5 20h14" />
+        }
+        @case ('globe') {
+          <circle cx="12" cy="12" r="9" />
+          <path d="M3 12h18" />
+          <path d="M12 3a13.5 13.5 0 0 1 0 18" />
+          <path d="M12 3a13.5 13.5 0 0 0 0 18" />
         }
         @case ('menu') {
           <path d="M4 7h16" />

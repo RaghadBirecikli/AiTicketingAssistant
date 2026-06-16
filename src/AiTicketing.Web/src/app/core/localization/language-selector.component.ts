@@ -2,22 +2,24 @@ import { ChangeDetectionStrategy, Component, HostListener, inject, signal } from
 import { LocalizationService } from './localization.service';
 import { AppLanguage } from './localization.models';
 import { TranslatePipe } from './translate.pipe';
+import { UiIconComponent } from '../../shared/components/ui-icon/ui-icon.component';
 
 @Component({
   selector: 'app-language-selector',
   standalone: true,
-  imports: [TranslatePipe],
+  imports: [TranslatePipe, UiIconComponent],
   template: `
-    <div class="language-selector">
+    <div class="language-selector" (click)="$event.stopPropagation()">
       <button
         class="language-trigger"
         type="button"
         aria-haspopup="menu"
         [attr.aria-expanded]="isOpen()"
-        [attr.aria-label]="'language.switchTo' | t: { language: targetLabel() }"
+        [attr.aria-label]="'language.menu' | t"
         (click)="toggle()"
         (keydown)="onKeydown($event)">
-        <span aria-hidden="true">{{ targetCode().toUpperCase() }}</span>
+        <app-ui-icon name="globe" aria-hidden="true" />
+        <span>{{ 'language.menu' | t }}</span>
       </button>
 
       @if (isOpen()) {
@@ -25,10 +27,12 @@ import { TranslatePipe } from './translate.pipe';
           @for (option of language.supportedLanguages; track option.code) {
             <button
               type="button"
+              class="language-option"
               role="menuitemradio"
               [attr.aria-checked]="language.language() === option.code"
               (click)="select(option.code)">
-              {{ label(option.code) }}
+              <app-ui-icon name="check" aria-hidden="true" />
+              <span>{{ label(option.code) }}</span>
             </button>
           }
         </div>
@@ -41,24 +45,45 @@ import { TranslatePipe } from './translate.pipe';
     }
 
     .language-trigger {
-      display: inline-grid;
-      min-width: 2.25rem;
-      min-height: 2.25rem;
-      place-items: center;
-      border: 1px solid transparent;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      min-width: 2.55rem;
+      min-height: var(--control-height-compact);
+      border: 1px solid var(--border);
       border-radius: var(--radius-sm);
-      background: transparent;
+      background: var(--surface-elevated);
       color: var(--text-secondary);
       cursor: pointer;
       font: inherit;
       font-size: 0.78rem;
       font-weight: 600;
+      box-shadow: var(--shadow-sm);
+      transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+    }
+
+    .language-trigger app-ui-icon {
+      width: 1rem;
+      height: 1rem;
     }
 
     .language-trigger:hover,
     .language-trigger[aria-expanded="true"] {
-      background: var(--surface-muted);
+      border-color: color-mix(in srgb, var(--primary), var(--border) 45%);
+      background: var(--primary-soft);
       color: var(--text-primary);
+    }
+
+    @media (max-width: 520px) {
+      .language-trigger span {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+      }
     }
 
     .language-menu {
@@ -75,7 +100,11 @@ import { TranslatePipe } from './translate.pipe';
       padding: 0.35rem;
     }
 
-    .language-menu button {
+    .language-option {
+      display: grid;
+      grid-template-columns: 1rem minmax(0, 1fr);
+      align-items: center;
+      gap: 0.5rem;
       min-height: 2.25rem;
       border: 0;
       border-radius: var(--radius-sm);
@@ -88,13 +117,23 @@ import { TranslatePipe } from './translate.pipe';
       text-align: start;
     }
 
-    .language-menu button:hover,
-    .language-menu button:focus-visible {
+    .language-option app-ui-icon {
+      visibility: hidden;
+      width: 0.95rem;
+      height: 0.95rem;
+    }
+
+    .language-option:hover,
+    .language-option:focus-visible {
       background: var(--surface-muted);
     }
 
-    .language-menu button[aria-checked="true"] {
+    .language-option[aria-checked="true"] {
       color: var(--primary);
+    }
+
+    .language-option[aria-checked="true"] app-ui-icon {
+      visibility: visible;
     }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -116,18 +155,6 @@ export class LanguageSelectorComponent {
     this.isOpen.set(false);
   }
 
-  currentLabel(): string {
-    return this.label(this.language.language());
-  }
-
-  targetCode(): AppLanguage {
-    return this.language.language() === 'ar' ? 'en' : 'ar';
-  }
-
-  targetLabel(): string {
-    return this.label(this.targetCode());
-  }
-
   label(language: AppLanguage): string {
     return this.language.t(language === 'ar' ? 'language.arabic' : 'language.english');
   }
@@ -147,6 +174,11 @@ export class LanguageSelectorComponent {
 
   @HostListener('document:keydown.escape')
   onDocumentEscape(): void {
+    this.close();
+  }
+
+  @HostListener('document:click')
+  onDocumentClick(): void {
     this.close();
   }
 }

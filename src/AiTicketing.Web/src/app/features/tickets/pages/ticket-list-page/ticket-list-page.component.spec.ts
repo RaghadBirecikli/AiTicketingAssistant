@@ -112,6 +112,40 @@ describe('TicketListPageComponent', () => {
     expect(text).not.toContain('Invalid date');
   });
 
+  it('uses the same semantic table data for mobile card styling', () => {
+    createComponent();
+
+    const firstCell = (fixture.nativeElement as HTMLElement).querySelector('tbody td');
+    const cardLink = (fixture.nativeElement as HTMLElement).querySelector('.ticket-card-link');
+    const updatedCell = (fixture.nativeElement as HTMLElement).querySelector('.date-cell.empty-metadata');
+
+    expect(firstCell?.getAttribute('data-label')).toBe('Ticket');
+    expect(firstCell?.querySelector('a')?.getAttribute('dir')).toBe('auto');
+    expect(firstCell?.querySelector('span')?.getAttribute('dir')).toBe('auto');
+    expect(cardLink).not.toBeNull();
+    expect(updatedCell).not.toBeNull();
+  });
+
+  it('toggles mobile filters and counts active filters', () => {
+    route.queryParamMapSubject.next(convertToParamMap({
+      search: 'payment',
+      status: 'Open',
+      priority: 'High'
+    }));
+    createComponent();
+
+    const filterButton = (fixture.nativeElement as HTMLElement).querySelector('.filter-toggle');
+    expect(filterButton?.textContent).toContain('Filters');
+    expect(filterButton?.textContent).toContain('3');
+    expect(fixture.componentInstance.isFiltersOpen()).toBeFalse();
+
+    filterButton?.dispatchEvent(new Event('click'));
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.isFiltersOpen()).toBeTrue();
+    expect((fixture.nativeElement as HTMLElement).querySelector('.filters')?.classList).toContain('is-open');
+  });
+
   it('ticket list item navigates to the role details route with return URL state', () => {
     createComponent();
     const link = (fixture.nativeElement as HTMLElement).querySelector('tbody a');

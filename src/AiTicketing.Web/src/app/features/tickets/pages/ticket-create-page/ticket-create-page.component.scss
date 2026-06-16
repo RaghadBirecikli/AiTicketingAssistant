@@ -1,15 +1,14 @@
 .create-page {
   display: grid;
-  gap: 1rem;
-  max-width: 820px;
+  gap: 0.72rem;
+  max-width: 860px;
   margin-inline: auto;
 }
 
 .create-header {
   display: grid;
   gap: 0.45rem;
-  border-bottom: 1px solid var(--border);
-  padding-block-end: 0.85rem;
+  padding-block-end: 0.25rem;
 }
 
 .create-header p {

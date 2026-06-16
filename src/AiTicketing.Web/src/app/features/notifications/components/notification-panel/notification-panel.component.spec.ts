@@ -40,14 +40,16 @@ class NotificationRealtimeStub {
 describe('NotificationPanelComponent', () => {
   let fixture: ComponentFixture<NotificationPanelComponent>;
   let notifications: NotificationStateStub;
+  let realtime: NotificationRealtimeStub;
 
   beforeEach(async () => {
     notifications = new NotificationStateStub();
+    realtime = new NotificationRealtimeStub();
     await TestBed.configureTestingModule({
       imports: [NotificationPanelComponent],
       providers: [
         { provide: NotificationStateService, useValue: notifications },
-        { provide: NotificationRealtimeService, useValue: new NotificationRealtimeStub() }
+        { provide: NotificationRealtimeService, useValue: realtime }
       ]
     }).compileComponents();
 
@@ -62,6 +64,24 @@ describe('NotificationPanelComponent', () => {
     expect(text).toContain('Ticket assigned to you.');
     expect(text).toContain('Unread');
     expect(text).not.toContain('recipient-user-id');
+  });
+
+  it('matches live-status text and indicator class to the connection state', () => {
+    let status = (fixture.nativeElement as HTMLElement).querySelector('.live-state') as HTMLElement;
+    expect(status.classList).toContain('live-state-connected');
+    expect(status.textContent).toContain('Live updates connected');
+
+    realtime.connectionState.set('reconnecting');
+    fixture.detectChanges();
+    status = (fixture.nativeElement as HTMLElement).querySelector('.live-state') as HTMLElement;
+    expect(status.classList).toContain('live-state-reconnecting');
+    expect(status.textContent).toContain('Reconnecting live updates');
+
+    realtime.connectionState.set('disconnected');
+    fixture.detectChanges();
+    status = (fixture.nativeElement as HTMLElement).querySelector('.live-state') as HTMLElement;
+    expect(status.classList).toContain('live-state-disconnected');
+    expect(status.textContent).toContain('Live updates unavailable');
   });
 
   it('renders empty notification state', () => {

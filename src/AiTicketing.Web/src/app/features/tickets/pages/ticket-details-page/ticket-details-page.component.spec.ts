@@ -182,6 +182,23 @@ describe('TicketDetailsPageComponent', () => {
     expect(text).toContain('Support Agent');
     expect(text).not.toContain('agent-id');
     expect(text).not.toContain('Invalid date');
+    expect(text).not.toContain('Admin ticket view');
+    expect(text).not.toContain('ADMIN TICKET VIEW');
+  });
+
+  it('uses a compact localized back action and native collapsible detail sections', () => {
+    createComponent();
+
+    const host = fixture.nativeElement as HTMLElement;
+    const backButton = host.querySelector('.back-button') as HTMLButtonElement;
+    const sections = Array.from(host.querySelectorAll<HTMLDetailsElement>('.details-section'));
+
+    expect(backButton).not.toBeNull();
+    expect(backButton.getAttribute('aria-label')).toBe('Back to tickets');
+    expect(backButton.querySelector('app-ui-icon')).not.toBeNull();
+    expect(sections.length).toBeGreaterThanOrEqual(3);
+    expect(sections.every(section => section.open)).toBeTrue();
+    expect(sections.map(section => section.querySelector('summary')?.textContent?.trim())).toContain('AI assistant');
   });
 
   it('renders public-message composer for Admin, Agent, and Customer', () => {
@@ -212,15 +229,15 @@ describe('TicketDetailsPageComponent', () => {
 
   it('Admin sees assignment control and Agent/Customer do not', () => {
     createComponent();
-    expect((fixture.nativeElement as HTMLElement).textContent).toContain('Assignment');
+    expect((fixture.nativeElement as HTMLElement).querySelector('app-ticket-assignment-control')).not.toBeNull();
 
     auth.currentRole.set('Agent');
     createComponent();
-    expect((fixture.nativeElement as HTMLElement).textContent).not.toContain('Assignment');
+    expect((fixture.nativeElement as HTMLElement).querySelector('app-ticket-assignment-control')).toBeNull();
 
     auth.currentRole.set('Customer');
     createComponent();
-    expect((fixture.nativeElement as HTMLElement).textContent).not.toContain('Assignment');
+    expect((fixture.nativeElement as HTMLElement).querySelector('app-ticket-assignment-control')).toBeNull();
   });
 
   it('Agent lookup is requested only for Admin', () => {

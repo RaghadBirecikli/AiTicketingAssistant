@@ -53,4 +53,14 @@ describe('NotificationBellComponent', () => {
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
     expect(notifications.closePanel).toHaveBeenCalled();
   });
+
+  it('closes the panel on outside click without closing for inside clicks', () => {
+    const button = (fixture.nativeElement as HTMLElement).querySelector('button') as HTMLButtonElement;
+
+    button.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(notifications.closePanel).not.toHaveBeenCalled();
+
+    document.body.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(notifications.closePanel).toHaveBeenCalled();
+  });
 });

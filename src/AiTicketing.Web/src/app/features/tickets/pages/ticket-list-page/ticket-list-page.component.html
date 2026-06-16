@@ -6,7 +6,24 @@
     </div>
   </header>
 
-  <form class="filters" [formGroup]="filtersForm" (ngSubmit)="applyFilters()">
+  <button
+    class="button button-secondary filter-toggle"
+    type="button"
+    [attr.aria-expanded]="isFiltersOpen()"
+    aria-controls="ticketFilters"
+    (click)="toggleFilters()">
+    {{ 'tickets.filters' | t }}
+    @if (activeFilterCount() > 0) {
+      <span class="filter-count">{{ activeFilterCount() }}</span>
+    }
+  </button>
+
+  <form
+    id="ticketFilters"
+    class="filters"
+    [class.is-open]="isFiltersOpen()"
+    [formGroup]="filtersForm"
+    (ngSubmit)="applyFilters()">
     <div class="form-field search-field">
       <label for="search">{{ 'tickets.search' | t }}</label>
       <input id="search" type="search" formControlName="search" [placeholder]="'tickets.searchPlaceholder' | t" />
@@ -106,7 +123,7 @@
         <span>{{ 'tickets.emptyDescription' | t }}</span>
       </div>
     } @else {
-      <div class="table-wrap">
+      <div class="table-wrap" data-overflow-check="ticket-table">
         <table>
           <caption class="sr-only">{{ 'tickets.listCaption' | t }}</caption>
           <thead>
@@ -125,7 +142,7 @@
             @for (ticket of page.items; track ticket.id) {
               <tr>
                 <td [attr.data-label]="'tickets.ticket' | t">
-                  <a [routerLink]="ticketDetailsRoute(ticket.id)" [queryParams]="ticketDetailsQueryParams()" dir="auto">{{ ticket.title }}</a>
+                  <a class="ticket-card-link" [routerLink]="ticketDetailsRoute(ticket.id)" [queryParams]="ticketDetailsQueryParams()" dir="auto">{{ ticket.title }}</a>
                   <span dir="auto">{{ ticket.description }}</span>
                 </td>
                 <td [attr.data-label]="'tickets.status' | t">
@@ -156,8 +173,8 @@
                   {{ ticket.customerName || ticket.customerEmail || ('tickets.notProvided' | t) }}
                 </td>
                 <td [attr.data-label]="'tickets.assigned' | t" dir="auto">{{ assignedLabel(ticket.assignedToUserId) }}</td>
-                <td [attr.data-label]="'tickets.created' | t"><span class="bidi-isolate">{{ ticket.createdAtUtc | localDateTime }}</span></td>
-                <td [attr.data-label]="'tickets.updated' | t"><span class="bidi-isolate">{{ ticket.updatedAtUtc | localDateTime }}</span></td>
+                <td class="date-cell" [attr.data-label]="'tickets.created' | t"><span class="bidi-isolate">{{ ticket.createdAtUtc | localDateTime }}</span></td>
+                <td class="date-cell" [class.empty-metadata]="!ticket.updatedAtUtc" [attr.data-label]="'tickets.updated' | t"><span class="bidi-isolate">{{ ticket.updatedAtUtc | localDateTime }}</span></td>
               </tr>
             }
           </tbody>

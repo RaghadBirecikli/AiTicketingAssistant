@@ -77,6 +77,21 @@ export class TicketListPageComponent implements OnInit {
   });
   readonly canGoPrevious = computed(() => this.tickets()?.hasPreviousPage ?? false);
   readonly canGoNext = computed(() => this.tickets()?.hasNextPage ?? false);
+  readonly isFiltersOpen = signal(false);
+  readonly activeFilterCount = computed(() => {
+    const query = this.currentQuery();
+    if (!query) {
+      return 0;
+    }
+
+    return [
+      query.search,
+      query.status,
+      query.priority,
+      query.assignedToUserId,
+      query.unassigned
+    ].filter(Boolean).length;
+  });
 
   readonly filtersForm = this.formBuilder.nonNullable.group({
     search: [''],
@@ -107,6 +122,7 @@ export class TicketListPageComponent implements OnInit {
 
   applyFilters(): void {
     this.navigateWithQuery({ ...this.queryFromForm(), page: 1 });
+    this.isFiltersOpen.set(false);
   }
 
   resetFilters(): void {
@@ -116,6 +132,11 @@ export class TicketListPageComponent implements OnInit {
       sortBy: 'createdAt',
       sortDirection: 'desc'
     });
+    this.isFiltersOpen.set(false);
+  }
+
+  toggleFilters(): void {
+    this.isFiltersOpen.update(value => !value);
   }
 
   changeSort(): void {

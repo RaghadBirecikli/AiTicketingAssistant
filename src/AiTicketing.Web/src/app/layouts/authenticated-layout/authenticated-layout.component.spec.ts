@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
-import { computed, signal } from '@angular/core';
+import { ComponentFixture, TestBed, fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
+import { Router, provideRouter } from '@angular/router';
+import { Component, computed, signal } from '@angular/core';
 import { AuthenticatedLayoutComponent } from './authenticated-layout.component';
 import { AuthService } from '../../core/auth/auth.service';
 import { CurrentUser } from '../../core/auth/auth.models';
@@ -28,6 +28,12 @@ class NotificationStateStub {
   closePanel = jasmine.createSpy('closePanel');
 }
 
+@Component({
+  standalone: true,
+  template: '<p>Next route</p>'
+})
+class DummyRouteComponent {}
+
 describe('AuthenticatedLayoutComponent', () => {
   let fixture: ComponentFixture<AuthenticatedLayoutComponent>;
   let auth: AuthServiceStub;
@@ -54,7 +60,7 @@ describe('AuthenticatedLayoutComponent', () => {
     await TestBed.configureTestingModule({
       imports: [AuthenticatedLayoutComponent],
       providers: [
-        provideRouter([]),
+        provideRouter([{ path: 'next', component: DummyRouteComponent }]),
         { provide: AuthService, useValue: auth },
         { provide: NotificationStateService, useValue: notifications }
       ]
@@ -66,6 +72,7 @@ describe('AuthenticatedLayoutComponent', () => {
 
   afterEach(() => {
     localStorage.clear();
+    document.body.classList.remove('nav-drawer-open');
   });
 
   it('displays the current user and role without rendering tokens', () => {
@@ -92,20 +99,85 @@ describe('AuthenticatedLayoutComponent', () => {
     expect(notifications.clear).toHaveBeenCalled();
   });
 
-  it('opens and closes mobile navigation accessibly', () => {
+  it('opens and closes mobile navigation accessibly', fakeAsync(() => {
     const menuButton = (fixture.nativeElement as HTMLElement).querySelector('.mobile-menu') as HTMLButtonElement;
+    const shell = (fixture.nativeElement as HTMLElement).querySelector('.shell') as HTMLElement;
+    const sidebar = (fixture.nativeElement as HTMLElement).querySelector('.sidebar') as HTMLElement;
 
     menuButton.click();
     fixture.detectChanges();
+    flushMicrotasks();
 
     expect(menuButton.getAttribute('aria-expanded')).toBe('true');
+    expect(shell.classList).toContain('mobile-nav-open');
+    expect(document.body.classList).toContain('nav-drawer-open');
+    expect(sidebar.getAttribute('aria-label')).toBe('Primary navigation');
+    expect(document.activeElement).toBe(sidebar);
     expect((fixture.nativeElement as HTMLElement).querySelector('.mobile-scrim')).not.toBeNull();
 
     ((fixture.nativeElement as HTMLElement).querySelector('.mobile-scrim') as HTMLButtonElement).click();
     fixture.detectChanges();
+    flushMicrotasks();
 
     expect(menuButton.getAttribute('aria-expanded')).toBe('false');
-  });
+    expect(shell.classList).not.toContain('mobile-nav-open');
+    expect(document.body.classList).not.toContain('nav-drawer-open');
+    expect(document.activeElement).toBe(menuButton);
+  }));
+
+  it('closes mobile navigation on Escape, route changes, and cleanup', fakeAsync(() => {
+    const menuButton = (fixture.nativeElement as HTMLElement).querySelector('.mobile-menu') as HTMLButtonElement;
+
+    menuButton.click();
+    fixture.detectChanges();
+    flushMicrotasks();
+    expect(menuButton.getAttribute('aria-expanded')).toBe('true');
+
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+    fixture.detectChanges();
+    flushMicrotasks();
+    expect(menuButton.getAttribute('aria-expanded')).toBe('false');
+    expect(document.body.classList).not.toContain('nav-drawer-open');
+
+    menuButton.click();
+    fixture.detectChanges();
+    flushMicrotasks();
+    void TestBed.inject(Router).navigateByUrl('/next');
+    tick();
+    fixture.detectChanges();
+    flushMicrotasks();
+    expect(menuButton.getAttribute('aria-expanded')).toBe('false');
+    expect(document.body.classList).not.toContain('nav-drawer-open');
+
+    menuButton.click();
+    fixture.detectChanges();
+    flushMicrotasks();
+    fixture.destroy();
+
+    expect(document.body.classList).not.toContain('nav-drawer-open');
+  }));
+
+  it('keeps drawer direction state independent of document direction', fakeAsync(() => {
+    const menuButton = (fixture.nativeElement as HTMLElement).querySelector('.mobile-menu') as HTMLButtonElement;
+    const shell = (fixture.nativeElement as HTMLElement).querySelector('.shell') as HTMLElement;
+
+    document.documentElement.dir = 'ltr';
+    menuButton.click();
+    fixture.detectChanges();
+    flushMicrotasks();
+    expect(shell.classList).toContain('mobile-nav-open');
+    expect((fixture.nativeElement as HTMLElement).querySelector('.mobile-scrim')).not.toBeNull();
+    ((fixture.nativeElement as HTMLElement).querySelector('.mobile-scrim') as HTMLButtonElement).click();
+    fixture.detectChanges();
+    flushMicrotasks();
+
+    document.documentElement.dir = 'rtl';
+    menuButton.click();
+    fixture.detectChanges();
+    flushMicrotasks();
+    expect(shell.classList).toContain('mobile-nav-open');
+    expect((fixture.nativeElement as HTMLElement).querySelector('.mobile-scrim')).not.toBeNull();
+  }));
 
   it('switches and persists theme preference from the shell', () => {
     const trigger = (fixture.nativeElement as HTMLElement).querySelector('.theme-trigger') as HTMLButtonElement;

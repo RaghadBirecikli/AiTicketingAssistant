@@ -4,25 +4,12 @@
       <p>{{ 'notifications.center' | t }}</p>
       <h2 id="notification-panel-heading">{{ 'notifications.title' | t }}</h2>
     </div>
-    <button class="icon-button" type="button" [attr.aria-label]="'notifications.close' | t" (click)="closePanel.emit()">{{ 'common.close' | t }}</button>
+    <button class="icon-button close-button" type="button" [attr.aria-label]="'notifications.close' | t" (click)="closePanel.emit()">×</button>
   </header>
 
   <div class="toolbar">
-    <span class="live-state" aria-live="polite">
-      @switch (realtime.connectionState()) {
-        @case ('connected') {
-          {{ 'notifications.liveConnected' | t }}
-        }
-        @case ('reconnecting') {
-          {{ 'notifications.liveReconnecting' | t }}
-        }
-        @case ('connecting') {
-          {{ 'notifications.liveConnecting' | t }}
-        }
-        @default {
-          {{ 'notifications.liveUnavailable' | t }}
-        }
-      }
+    <span [class]="liveStateClass()" aria-live="polite">
+      {{ liveStateLabel() | t }}
     </span>
 
     @if (notifications.unreadCount() > 0) {

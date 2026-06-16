@@ -49,6 +49,22 @@ describe('NotificationItemComponent', () => {
     expect(component.markRead.emit).toHaveBeenCalledWith(notification);
   });
 
+  it('opens the related ticket from the clickable row by mouse and keyboard', () => {
+    spyOn(component.openTicket, 'emit');
+
+    const item = (fixture.nativeElement as HTMLElement).querySelector('.notification-item') as HTMLElement;
+    expect(item.classList).toContain('clickable');
+    expect(item.getAttribute('role')).toBe('button');
+    expect(item.getAttribute('tabindex')).toBe('0');
+
+    item.click();
+    item.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
+    item.dispatchEvent(new KeyboardEvent('keydown', { key: ' ' }));
+
+    expect(component.openTicket.emit).toHaveBeenCalledTimes(3);
+    expect(component.openTicket.emit).toHaveBeenCalledWith(notification);
+  });
+
   it('does not render unread action for read notifications or ticket action without ticket id', () => {
     fixture.componentRef.setInput('notification', {
       ...notification,
@@ -62,5 +78,6 @@ describe('NotificationItemComponent', () => {
     expect(text).toContain('Read');
     expect(text).not.toContain('Mark as read');
     expect(text).not.toContain('Open related ticket');
+    expect((fixture.nativeElement as HTMLElement).querySelector('.notification-item')?.getAttribute('role')).toBeNull();
   });
 });

@@ -133,6 +133,7 @@ export const englishTranslations: TranslationDictionary = {
     unassigned: 'Unassigned',
     sortBy: 'Sort by',
     direction: 'Direction',
+    filters: 'Filters',
     applyFilters: 'Apply filters',
     resetFilters: 'Reset filters',
     ticketsFound: '{count} tickets found',
@@ -164,14 +165,21 @@ export const englishTranslations: TranslationDictionary = {
       description: 'Send the support team the details they need to start investigating your request.',
       title: 'Title',
       titleRequired: 'Title is required.',
+      titleBlank: 'Title cannot be blank.',
+      titleMaxLength: 'Title must be 200 characters or fewer.',
       titleRemaining: '{count} characters remaining.',
       descriptionLabel: 'Description',
       descriptionRequired: 'Description is required.',
+      descriptionBlank: 'Description cannot be blank.',
+      descriptionMaxLength: 'Description must be 4000 characters or fewer.',
       descriptionRemaining: '{count} characters remaining.',
       source: 'Ticket source: {source}',
       create: 'Create ticket',
       creating: 'Creating...',
       success: 'Ticket created successfully.',
+      validationError: 'Please check the ticket details and try again.',
+      forbidden: 'You are not allowed to create a ticket.',
+      conflict: 'The ticket could not be created because of a conflicting change.',
       error: 'Ticket could not be created. Please try again.',
       unsavedConfirm: 'You have unsaved ticket details. Leave this page?'
     }
@@ -179,6 +187,7 @@ export const englishTranslations: TranslationDictionary = {
   ticketDetails: {
     title: 'Ticket details',
     back: 'Back to tickets',
+    backAria: 'Back to tickets',
     loading: 'Loading ticket details...',
     retry: 'Retry',
     adminView: 'Admin ticket view',
@@ -193,7 +202,10 @@ export const englishTranslations: TranslationDictionary = {
     resolved: 'Resolved',
     closed: 'Closed',
     conversation: 'Conversation',
-    noMessages: 'No conversation messages have been added yet.'
+    noMessages: 'No conversation messages have been added yet.',
+    informationSection: 'Ticket information',
+    workflowSection: 'Assignment and status',
+    aiSection: 'AI Assistant'
   },
   messages: {
     publicReply: 'Public reply',
@@ -359,7 +371,7 @@ export const englishTranslations: TranslationDictionary = {
     source: { Web: 'Web', Email: 'Email', Phone: 'Phone', Internal: 'Internal' },
     role: { Admin: 'Admin', Agent: 'Agent', Customer: 'Customer' },
     sort: { createdAt: 'Created date', updatedAt: 'Updated date', priority: 'Priority', status: 'Status' },
-    direction: { asc: 'asc', desc: 'desc' },
+    direction: { asc: 'Oldest first', desc: 'Newest first' },
     notificationType: { TicketAssigned: 'Ticket assigned', TicketStatusChanged: 'Ticket status updated', TicketMessageCreated: 'New ticket message' }
   }
 };
@@ -497,6 +509,7 @@ export const arabicTranslations: TranslationDictionary = {
     unassigned: 'غير معيّنة',
     sortBy: 'ترتيب حسب',
     direction: 'الاتجاه',
+    filters: 'الفلاتر',
     applyFilters: 'تطبيق الفلاتر',
     resetFilters: 'إعادة ضبط الفلاتر',
     ticketsFound: 'تم العثور على {count} تذكرة',
@@ -528,14 +541,21 @@ export const arabicTranslations: TranslationDictionary = {
       description: 'أرسل لفريق الدعم التفاصيل التي يحتاجها لبدء التحقيق في طلبك.',
       title: 'العنوان',
       titleRequired: 'العنوان مطلوب.',
+      titleMaxLength: 'يجب ألا يتجاوز العنوان 200 حرف.',
+      titleBlank: 'لا يمكن أن يكون العنوان فارغًا.',
       titleRemaining: 'متبقٍ {count} حرف.',
       descriptionLabel: 'الوصف',
       descriptionRequired: 'الوصف مطلوب.',
+      descriptionMaxLength: 'يجب ألا يتجاوز الوصف 4000 حرف.',
+      descriptionBlank: 'لا يمكن أن يكون الوصف فارغًا.',
       descriptionRemaining: 'متبقٍ {count} حرف.',
       source: 'مصدر التذكرة: {source}',
       create: 'إنشاء تذكرة',
       creating: 'جار الإنشاء...',
       success: 'تم إنشاء التذكرة بنجاح.',
+      conflict: 'تعذر إنشاء التذكرة بسبب تعارض في التغييرات.',
+      forbidden: 'ليست لديك صلاحية لإنشاء تذكرة.',
+      validationError: 'يرجى مراجعة تفاصيل التذكرة والمحاولة مرة أخرى.',
       error: 'تعذر إنشاء التذكرة. يرجى المحاولة مرة أخرى.',
       unsavedConfirm: 'لديك تفاصيل تذكرة غير محفوظة. هل تريد مغادرة الصفحة؟'
     }

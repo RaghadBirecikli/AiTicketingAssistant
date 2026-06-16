@@ -1,5 +1,9 @@
 <div class="shell" [class.sidebar-collapsed]="isSidebarCollapsed()" [class.mobile-nav-open]="isMobileNavOpen()">
-  <aside class="sidebar" [attr.aria-label]="'navigation.primary' | t">
+  <aside
+    #sidebarDrawer
+    class="sidebar"
+    tabindex="-1"
+    [attr.aria-label]="'navigation.primary' | t">
     <div class="brand-row">
       <a class="brand" routerLink="/" (click)="closeMobileNav()" [attr.aria-label]="'navigation.home' | t">
         <span class="brand-mark" aria-hidden="true">
@@ -52,6 +56,7 @@
       <div class="topbar-left">
         <button
           class="icon-button mobile-menu"
+          #mobileMenuButton
           type="button"
           [attr.aria-expanded]="isMobileNavOpen()"
           [attr.aria-label]="'navigation.openNavigation' | t"

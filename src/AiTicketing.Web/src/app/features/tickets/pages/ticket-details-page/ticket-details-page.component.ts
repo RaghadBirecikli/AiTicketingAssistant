@@ -15,6 +15,7 @@ import { TicketStatusControlComponent } from '../../components/ticket-status-con
 import { TicketSummaryCardComponent } from '../../components/ticket-summary-card/ticket-summary-card.component';
 import { TicketListService } from '../../data-access/ticket-list.service';
 import { AgentLookup, TicketDetails, TicketDetailsMessage, TicketListItem, TicketStatus } from '../../models/ticket-list.models';
+import { UiIconComponent } from '../../../../shared/components/ui-icon/ui-icon.component';
 
 type DetailsState = 'ready' | 'not-found' | 'forbidden' | 'error';
 
@@ -30,7 +31,8 @@ const guidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}
     TicketMessageComposerComponent,
     TicketStatusControlComponent,
     TicketSummaryCardComponent,
-    TranslatePipe
+    TranslatePipe,
+    UiIconComponent
   ],
   templateUrl: './ticket-details-page.component.html',
   styleUrl: './ticket-details-page.component.scss',

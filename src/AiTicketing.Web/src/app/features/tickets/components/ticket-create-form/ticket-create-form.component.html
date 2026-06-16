@@ -8,7 +8,7 @@
   }
 
   <div class="form-field">
-    <label for="ticketTitle">Title</label>
+    <label for="ticketTitle">{{ 'tickets.create.title' | t }}</label>
     <input
       id="ticketTitle"
       type="text"
@@ -18,20 +18,20 @@
       [attr.aria-invalid]="form.controls.title.invalid && form.controls.title.touched"
       aria-describedby="ticketTitleHelp ticketTitleError"
     />
-    <div id="ticketTitleHelp" class="field-help">{{ titleRemaining }} characters remaining</div>
+    <div id="ticketTitleHelp" class="field-help">{{ 'tickets.create.titleRemaining' | t: { count: titleRemaining } }}</div>
     <div id="ticketTitleError" class="field-error" aria-live="polite">
       @if (form.controls.title.touched && form.controls.title.hasError('required')) {
-        Title is required.
+        {{ 'tickets.create.titleRequired' | t }}
       } @else if (form.controls.title.touched && form.controls.title.hasError('whitespace')) {
-        Title cannot be blank.
+        {{ 'tickets.create.titleBlank' | t }}
       } @else if (form.controls.title.touched && form.controls.title.hasError('maxlength')) {
-        Title must be 200 characters or fewer.
+        {{ 'tickets.create.titleMaxLength' | t }}
       }
     </div>
   </div>
 
   <div class="form-field">
-    <label for="ticketDescription">Description</label>
+    <label for="ticketDescription">{{ 'tickets.create.descriptionLabel' | t }}</label>
     <textarea
       id="ticketDescription"
       formControlName="description"
@@ -40,26 +40,26 @@
       [attr.aria-invalid]="form.controls.description.invalid && form.controls.description.touched"
       aria-describedby="ticketDescriptionHelp ticketDescriptionError"
     ></textarea>
-    <div id="ticketDescriptionHelp" class="field-help">{{ descriptionRemaining }} characters remaining</div>
+    <div id="ticketDescriptionHelp" class="field-help">{{ 'tickets.create.descriptionRemaining' | t: { count: descriptionRemaining } }}</div>
     <div id="ticketDescriptionError" class="field-error" aria-live="polite">
       @if (form.controls.description.touched && form.controls.description.hasError('required')) {
-        Description is required.
+        {{ 'tickets.create.descriptionRequired' | t }}
       } @else if (form.controls.description.touched && form.controls.description.hasError('whitespace')) {
-        Description cannot be blank.
+        {{ 'tickets.create.descriptionBlank' | t }}
       } @else if (form.controls.description.touched && form.controls.description.hasError('maxlength')) {
-        Description must be 4000 characters or fewer.
+        {{ 'tickets.create.descriptionMaxLength' | t }}
       }
     </div>
   </div>
 
   <div class="details-note">
-    Ticket source: <strong>Web</strong>
+    {{ 'tickets.create.source' | t: { source: localization.enumLabel('source', 'Web') } }}
   </div>
 
   <div class="actions">
     <button class="button" type="submit" [disabled]="form.invalid || isSubmitting">
-      {{ isSubmitting ? 'Creating...' : 'Create ticket' }}
+      {{ isSubmitting ? ('tickets.create.creating' | t) : ('tickets.create.create' | t) }}
     </button>
-    <button class="button button-secondary" type="button" [disabled]="isSubmitting" (click)="cancel()">Cancel</button>
+    <button class="button button-secondary" type="button" [disabled]="isSubmitting" (click)="cancel()">{{ 'common.cancel' | t }}</button>
   </div>
 </form>

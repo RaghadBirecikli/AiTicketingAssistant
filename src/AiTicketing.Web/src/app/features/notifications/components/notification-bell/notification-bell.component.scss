@@ -6,9 +6,9 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  border: 1px solid var(--border);
+  border: 1px solid transparent;
   border-radius: var(--radius-sm);
-  background: var(--surface-elevated);
+  background: transparent;
   color: var(--text-primary);
   cursor: pointer;
   font: inherit;
@@ -19,14 +19,14 @@
 
 .bell-button:hover,
 .bell-button:focus-visible {
-  border-color: var(--primary);
-  background: var(--primary-soft);
+  border-color: var(--border);
+  background: var(--surface-muted);
 }
 
 .bell-glyph {
   display: inline-grid;
-  width: 1.55rem;
-  height: 1.55rem;
+  width: 1.45rem;
+  height: 1.45rem;
   place-items: center;
   border-radius: 50%;
   background: var(--surface-muted);
@@ -45,7 +45,7 @@
 
 .panel-wrapper {
   position: absolute;
-  inset-block-start: calc(100% + 0.75rem);
+  inset-block-start: calc(100% + 0.55rem);
   inset-inline-end: 0;
   z-index: var(--z-popover);
 }

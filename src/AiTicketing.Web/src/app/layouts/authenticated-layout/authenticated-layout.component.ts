@@ -1,4 +1,5 @@
-import { Component, HostListener, computed, inject, signal } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import { Component, DestroyRef, ElementRef, HostListener, ViewChild, computed, effect, inject, signal } from '@angular/core';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs';
 import { AuthService } from '../../core/auth/auth.service';
@@ -44,6 +45,8 @@ export class AuthenticatedLayoutComponent {
   private readonly authService = inject(AuthService);
   private readonly notifications = inject(NotificationStateService);
   private readonly router = inject(Router);
+  private readonly document = inject(DOCUMENT);
+  private readonly destroyRef = inject(DestroyRef);
   readonly localization = inject(LocalizationService);
   readonly theme = inject(ThemeService);
 
@@ -79,6 +82,9 @@ export class AuthenticatedLayoutComponent {
   });
   readonly themeIcon = computed<UiIconName>(() => this.theme.effectiveTheme() === 'dark' ? 'moon' : 'sun');
 
+  @ViewChild('mobileMenuButton') private mobileMenuButton?: ElementRef<HTMLButtonElement>;
+  @ViewChild('sidebarDrawer') private sidebarDrawer?: ElementRef<HTMLElement>;
+
   constructor() {
     this.router.events
       .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
@@ -88,6 +94,24 @@ export class AuthenticatedLayoutComponent {
         this.closeThemeMenu();
         this.closeUserMenu();
       });
+
+    effect(() => {
+      const title = this.pageTitle();
+      const appName = this.localization.t('common.appName');
+      this.document.title = title ? `${title} | ${appName}` : appName;
+    });
+
+    effect(() => {
+      const isOpen = this.isMobileNavOpen();
+      this.document.body.classList.toggle('nav-drawer-open', isOpen);
+      if (isOpen) {
+        queueMicrotask(() => this.sidebarDrawer?.nativeElement.focus());
+      }
+    });
+
+    this.destroyRef.onDestroy(() => {
+      this.document.body.classList.remove('nav-drawer-open');
+    });
   }
 
   setTheme(preference: ThemePreference): void {
@@ -158,11 +182,19 @@ export class AuthenticatedLayoutComponent {
   }
 
   toggleMobileNav(): void {
-    this.isMobileNavOpen.update(value => !value);
+    this.isMobileNavOpen() ? this.closeMobileNav() : this.openMobileNav();
+  }
+
+  openMobileNav(): void {
+    this.isMobileNavOpen.set(true);
   }
 
   closeMobileNav(): void {
+    const wasOpen = this.isMobileNavOpen();
     this.isMobileNavOpen.set(false);
+    if (wasOpen) {
+      queueMicrotask(() => this.mobileMenuButton?.nativeElement.focus());
+    }
   }
 
   toggleUserMenu(): void {
@@ -208,6 +240,7 @@ export class AuthenticatedLayoutComponent {
 
   @HostListener('document:keydown.escape')
   onDocumentEscape(): void {
+    this.closeMobileNav();
     this.closeThemeMenu();
     this.closeUserMenu();
   }

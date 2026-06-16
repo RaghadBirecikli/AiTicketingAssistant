@@ -1,5 +1,7 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { LocalizationService } from '../../../../core/localization/localization.service';
+import { TranslatePipe } from '../../../../core/localization/translate.pipe';
 
 export interface TicketCreateSubmit {
   title: string;
@@ -16,13 +18,14 @@ const notWhitespaceValidator: ValidatorFn = (control: AbstractControl<string>): 
 @Component({
   selector: 'app-ticket-create-form',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, TranslatePipe],
   templateUrl: './ticket-create-form.component.html',
   styleUrl: './ticket-create-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TicketCreateFormComponent {
   private readonly formBuilder = inject(FormBuilder);
+  protected readonly localization = inject(LocalizationService);
 
   @Input() isSubmitting = false;
   @Input() errorMessage: string | null = null;
