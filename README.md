@@ -1008,15 +1008,6 @@ npm test -- --watch=false --browsers=ChromeHeadless
 npm run build
 ```
 
-يجب عدم رفع المعلومات الحساسة إلى Git، بما في ذلك:
-
-* كلمات المرور
-* connection strings
-* مفاتيح JWT
-* مفاتيح API
-* ملفات فحص المتصفح المؤقتة
-* ملفات الإنتاج المحلية
-
 ---
 
 ## Repository Description
