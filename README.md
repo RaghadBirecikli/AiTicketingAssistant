@@ -1008,10 +1008,3 @@ npm test -- --watch=false --browsers=ChromeHeadless
 npm run build
 ```
 
----
-
-## Repository Description
-
-Use this as the GitHub repository description:
-
-> Bilingual AI-powered helpdesk and ticket management system built with ASP.NET Core, Angular, SQL Server, SignalR, and Ollama-compatible AI.
